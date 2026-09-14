@@ -124,7 +124,7 @@ print(classify_variance(112_000_000, 100_000_000, is_revenue=False))  # Unfavora
 
 الـ Skill يدعم:
 
-- Excel, CSV, PDF, Trial Balance, Budgets, Forecasts, Sales Reports
+- Excel, CSV, Trial Balance (PDF مع قراءة يدوية - التحليل التلقائي قادم), Budgets, Forecasts, Sales Reports
 
 **ماذا ترفع؟**
 

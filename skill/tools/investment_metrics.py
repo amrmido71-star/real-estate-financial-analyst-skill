@@ -1,38 +1,101 @@
 """
 investment_metrics.py — Investment & Valuation Metrics
-NPV, IRR, Equity Multiple, Cash-on-Cash, Payback, ROIC
+NPV, IRR, MIRR, Equity Multiple, Payback, ROIC
+Convention: cash_flows[0] = Period 0 (not discounted), cash_flows[1] = Period 1 (discounted 1 period), etc.
 Pure Python — no external dependencies beyond stdlib.
 """
 
-from typing import Optional, List
+from typing import Optional, List, Tuple
+from .exceptions import InvalidDiscountRateError, InvalidCashFlowError, MultipleIRRError, NoIRRError
 
 
-def calculate_npv(cash_flows: List[float], discount_rate: float, initial_investment: Optional[float] = None) -> Optional[float]:
+def calculate_npv(cash_flows: List[float], discount_rate: float) -> Optional[float]:
     """
-    NPV = Σ CF_t / (1+r)^t  (t starting at 1)
-    If initial_investment provided separately (positive number), it is subtracted as outflow at t=0.
-    If cash_flows already includes initial negative at index 0, set initial_investment=None.
-    discount_rate as decimal (0.15 = 15%)
+    NPV = Σ CF_t / (1+r)^t  for t=0..n
+    - cash_flows[0] is Period 0 and is NOT discounted (divided by 1)
+    - discount_rate as decimal (0.15 = 15%)
+    - Returns None for empty input; raises InvalidDiscountRateError if r <= -1
+    Mathematically correct and matches Excel NPV if cash_flows[0] is initial investment.
+
+    Examples:
+        [-100, 60, 60] @10% => -100 + 54.545 + 49.586 = 4.132
+        [-1000, 300, 400, 500] @10% => NPV ≈ 19.1
     """
     if not cash_flows:
         return None
     if discount_rate is None:
         return None
+    if discount_rate <= -1:
+        raise InvalidDiscountRateError(f"Discount rate must be > -1, got {discount_rate}")
+    if discount_rate == -1:
+        return None
     npv = 0.0
     for t, cf in enumerate(cash_flows):
-        # t=0 is present, not discounted
-        if t == 0:
-            npv += cf / ((1 + discount_rate) ** 0)
-        else:
-            npv += cf / ((1 + discount_rate) ** t)
-    if initial_investment is not None:
-        npv -= initial_investment
+        npv += cf / ((1 + discount_rate) ** t)
     return npv
 
 
+def calculate_npv_with_initial(cash_flows: List[float], discount_rate: float, initial_investment: float) -> Optional[float]:
+    """
+    Convenience when initial investment is separate from operating cash flows.
+    NPV = -initial_investment + Σ CF_t/(1+r)^t where CF_t starts at t=1
+
+    Example:
+        initial=100, cash_flows=[60,60] @10% => -100 + 54.545 + 49.586 = 4.132
+        Equivalent to calculate_npv([-100, 60, 60], 0.10)
+    """
+    if cash_flows is None:
+        return None
+    combined = [-abs(initial_investment)] + list(cash_flows)
+    return calculate_npv(combined, discount_rate)
+
+
+# Backward compat alias
 def calculate_npv_simple(cash_flows: List[float], discount_rate: float) -> Optional[float]:
-    """Alias where cash_flows includes initial investment as first element (negative)."""
     return calculate_npv(cash_flows, discount_rate)
+
+
+def _npv_at(cash_flows: List[float], rate: float) -> float:
+    total = 0.0
+    for t, cf in enumerate(cash_flows):
+        total += cf / ((1 + rate) ** t)
+    return total
+
+
+def _npv_derivative(cash_flows: List[float], rate: float) -> float:
+    total = 0.0
+    for t, cf in enumerate(cash_flows):
+        if t == 0:
+            continue
+        total += -t * cf / ((1 + rate) ** (t + 1))
+    return total
+
+
+def count_sign_changes(cash_flows: List[float]) -> int:
+    """Count sign changes ignoring zeros"""
+    filtered = [cf for cf in cash_flows if cf != 0]
+    if len(filtered) < 2:
+        return 0
+    changes = 0
+    for i in range(1, len(filtered)):
+        if filtered[i] * filtered[i-1] < 0:
+            changes += 1
+    return changes
+
+
+def detect_multiple_irr(cash_flows: List[float]) -> Tuple[bool, int, str]:
+    """
+    Detect if cash flows may have multiple IRRs.
+    Returns (has_multiple_risk, sign_changes, message)
+    - 0 or 1 sign change => unique IRR (if exists)
+    - >1 sign change => potential multiple IRRs (Descartes' rule)
+    """
+    changes = count_sign_changes(cash_flows)
+    if changes == 0:
+        return (False, changes, "No sign change — no IRR exists (all inflows or all outflows)")
+    if changes == 1:
+        return (False, changes, "One sign change — unique IRR if exists")
+    return (True, changes, f"{changes} sign changes — potential multiple IRRs; use MIRR or NPV profile")
 
 
 def calculate_irr(
@@ -42,72 +105,53 @@ def calculate_irr(
     tolerance: float = 1e-6,
 ) -> Optional[float]:
     """
-    IRR via Newton-Raphson + fallback to bisection.
-    Returns IRR as decimal (0.18 = 18%) or None if not converge / no sign change.
-    Requires at least one positive and one negative cash flow.
+    IRR via Newton-Raphson + bisection fallback.
+    Returns IRR as decimal (0.18 = 18%) or None if no IRR exists.
+    Convention: cash_flows[0]=Period 0 (undiscounted).
+
+    Detects non-conventional flows but still attempts to find a root.
+    Use detect_multiple_irr() to warn caller.
     """
     if not cash_flows or len(cash_flows) < 2:
         return None
-
-    # Check sign change
     has_positive = any(cf > 0 for cf in cash_flows)
     has_negative = any(cf < 0 for cf in cash_flows)
     if not (has_positive and has_negative):
         return None
 
-    def npv_at(rate: float) -> float:
-        total = 0.0
-        for t, cf in enumerate(cash_flows):
-            total += cf / ((1 + rate) ** t)
-        return total
-
-    def npv_derivative(rate: float) -> float:
-        total = 0.0
-        for t, cf in enumerate(cash_flows):
-            if t == 0:
-                continue
-            total += -t * cf / ((1 + rate) ** (t + 1))
-        return total
-
     # Newton-Raphson
     rate = guess
     for _ in range(max_iterations):
-        npv_val = npv_at(rate)
+        npv_val = _npv_at(cash_flows, rate)
         if abs(npv_val) < tolerance:
-            # Validate rate is reasonable: -99% to +1000%
             if -0.99 < rate < 10:
                 return rate
             else:
                 break
-        deriv = npv_derivative(rate)
+        deriv = _npv_derivative(cash_flows, rate)
         if deriv == 0:
             break
         new_rate = rate - npv_val / deriv
-        # Prevent divergence: clamp
         if new_rate < -0.99:
             new_rate = -0.99 + 1e-6
         if abs(new_rate - rate) < tolerance:
-            if abs(npv_at(new_rate)) < tolerance * 10:
+            if abs(_npv_at(cash_flows, new_rate)) < tolerance * 10:
                 return new_rate
         rate = new_rate
 
-    # Fallback: Bisection between -0.9 and 5.0 (i.e., -90% to 500%)
+    # Bisection fallback
     low, high = -0.90, 5.0
-    npv_low = npv_at(low)
-    npv_high = npv_at(high)
-
-    # Need opposite signs for bisection
+    npv_low = _npv_at(cash_flows, low)
+    npv_high = _npv_at(cash_flows, high)
     if npv_low * npv_high > 0:
-        # Try narrower range
         low, high = -0.5, 2.0
-        npv_low = npv_at(low)
-        npv_high = npv_at(high)
+        npv_low = _npv_at(cash_flows, low)
+        npv_high = _npv_at(cash_flows, high)
         if npv_low * npv_high > 0:
             return None
-
     for _ in range(max_iterations):
         mid = (low + high) / 2
-        npv_mid = npv_at(mid)
+        npv_mid = _npv_at(cash_flows, mid)
         if abs(npv_mid) < tolerance:
             return mid
         if npv_low * npv_mid < 0:
@@ -118,14 +162,45 @@ def calculate_irr(
             npv_low = npv_mid
         if (high - low) < tolerance:
             return mid
-
     return None
 
 
+def calculate_mirr(cash_flows: List[float], finance_rate: float, reinvest_rate: float) -> Optional[float]:
+    """
+    MIRR = Modified IRR that solves multiple-IRR problem.
+    - Negative cash flows discounted to Present at finance_rate
+    - Positive cash flows compounded to Future at reinvest_rate
+    - MIRR = (FV_positive / -PV_negative)^(1/n) - 1
+
+    finance_rate, reinvest_rate as decimals (0.10 = 10%)
+    """
+    if not cash_flows or len(cash_flows) < 2:
+        return None
+    if finance_rate <= -1 or reinvest_rate <= -1:
+        raise InvalidDiscountRateError("Rates must be > -1")
+    n = len(cash_flows) - 1
+    pv_neg = 0.0
+    fv_pos = 0.0
+    has_neg = False
+    has_pos = False
+    for t, cf in enumerate(cash_flows):
+        if cf < 0:
+            has_neg = True
+            pv_neg += cf / ((1 + finance_rate) ** t)
+        elif cf > 0:
+            has_pos = True
+            fv_pos += cf * ((1 + reinvest_rate) ** (n - t))
+    if not has_neg or not has_pos:
+        return None
+    if pv_neg == 0:
+        return None
+    # pv_neg is negative, so -pv_neg is positive
+    mirr = (fv_pos / -pv_neg) ** (1 / n) - 1
+    return mirr
+
+
 def calculate_irr_annualized(monthly_cash_flows: List[float], guess: float = 0.1) -> Optional[float]:
-    """
-    Calculate IRR from monthly cash flows and annualize: (1 + monthly_irr)^12 - 1
-    """
+    """Annualized IRR from monthly: (1+monthlyIRR)^12 -1"""
     monthly_irr = calculate_irr(monthly_cash_flows, guess=guess)
     if monthly_irr is None:
         return None
@@ -133,61 +208,71 @@ def calculate_irr_annualized(monthly_cash_flows: List[float], guess: float = 0.1
 
 
 def calculate_equity_multiple(total_distributions: Optional[float], equity_invested: Optional[float]) -> Optional[float]:
-    """Equity Multiple = Total Distributions / Equity Invested"""
     if total_distributions is None or equity_invested is None or equity_invested == 0:
         return None
     return total_distributions / equity_invested
 
 
 def calculate_cash_on_cash(annual_cash_flow: Optional[float], equity_invested: Optional[float]) -> Optional[float]:
-    """Cash-on-Cash % = Annual Cash Flow / Equity Invested * 100"""
     if annual_cash_flow is None or equity_invested is None or equity_invested == 0:
         return None
     return (annual_cash_flow / equity_invested) * 100
 
 
 def calculate_payback_period(cash_flows: List[float]) -> Optional[float]:
-    """
-    Payback Period = time to recover initial investment (in same period units as cash_flows)
-    Returns fractional period (e.g., 2.5 means 2.5 years if cash_flows are yearly)
-    Uses linear interpolation within the payback period.
-    If never pays back, returns None.
-    """
+    """Payback period with linear interpolation; None if never pays back"""
     if not cash_flows:
         return None
-    # Assume first element is initial investment (negative)
     cumulative = 0.0
     for t, cf in enumerate(cash_flows):
-        prev_cumulative = cumulative
+        prev = cumulative
         cumulative += cf
         if cumulative >= 0 and t > 0:
-            # Payback within this period
             if cf == 0:
                 return float(t)
-            # Fraction = (0 - prev_cumulative) / cf
-            fraction = (0 - prev_cumulative) / cf
+            fraction = (0 - prev) / cf
             return (t - 1) + fraction
         elif t == 0 and cumulative >= 0:
             return 0.0
-    return None  # Never pays back
+    return None
 
 
 def calculate_roic(nopat: Optional[float], invested_capital: Optional[float]) -> Optional[float]:
-    """ROIC % = NOPAT / Invested Capital * 100"""
     if nopat is None or invested_capital is None or invested_capital == 0:
         return None
     return (nopat / invested_capital) * 100
 
 
 def calculate_nopat(ebit: Optional[float], tax_rate: float) -> Optional[float]:
-    """NOPAT = EBIT * (1 - Tax Rate)"""
     if ebit is None:
         return None
     return ebit * (1 - tax_rate)
 
 
 def calculate_roi_simple(gain: Optional[float], cost: Optional[float]) -> Optional[float]:
-    """ROI % = (Gain - Cost)/Cost *100 — same as financial_calculations but alias"""
     if gain is None or cost is None or cost == 0:
         return None
     return ((gain - cost) / cost) * 100
+
+
+def irr_with_diagnostics(cash_flows: List[float]) -> dict:
+    """Returns dict with irr, sign_changes, has_multiple_risk, mirr, npv_profile hint"""
+    changes = count_sign_changes(cash_flows)
+    has_multiple, _, msg = detect_multiple_irr(cash_flows)
+    irr = calculate_irr(cash_flows)
+    # Suggest MIRR if multiple
+    mirr = None
+    if has_multiple and irr is not None:
+        try:
+            mirr = calculate_mirr(cash_flows, finance_rate=0.10, reinvest_rate=0.12)
+        except Exception:
+            mirr = None
+    return {
+        "irr": irr,
+        "irr_pct": irr * 100 if irr is not None else None,
+        "sign_changes": changes,
+        "has_multiple_risk": has_multiple,
+        "message": msg,
+        "mirr": mirr,
+        "mirr_pct": mirr * 100 if mirr is not None else None,
+    }

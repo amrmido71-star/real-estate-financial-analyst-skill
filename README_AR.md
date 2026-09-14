@@ -4,8 +4,8 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-70%2B%20passing-brightgreen)](#الاختبارات)
-[![Version](https://img.shields.io/badge/Version-1.0.0-orange)](#)
+[![Tests](https://img.shields.io/badge/Tests-154%20passing-brightgreen)](#الاختبارات)
+[![Version](https://img.shields.io/badge/Version-1.1.0-orange)](#)
 
 **ثنائي اللغة:** عربي + إنجليزي — يرد بنفس لغة المستخدم.  
 **التخصص:** سكني، تجاري، متعدد الاستخدامات، ضيافة، تطوير أراضي — قابل للتكيف مع أي سوق (MENA، الخليج، عالمي).  
@@ -104,11 +104,11 @@ real-estate-financial-analyst-skill/
 ### 1. التثبيت
 
 ```bash
-git clone https://github.com/your-org/real-estate-financial-analyst-skill.git
+git clone https://github.com/amrmido71-star/real-estate-financial-analyst-skill.git
 cd real-estate-financial-analyst-skill
 python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-pytest -v  # يجب أن تنجح ~70 اختبارًا
+pytest -v  # يجب أن تنجح ~154 اختبارًا
 ```
 
 ### 2. الاستخدام المباشر بـ Python (بدون Agent)
@@ -284,7 +284,7 @@ git init
 git add .
 git commit -m "feat: initial release — Real Estate Financial Analyst Skill v1.0.0"
 git branch -M main
-git remote add origin https://github.com/your-org/real-estate-financial-analyst-skill.git
+git remote add origin https://github.com/amrmido71-star/real-estate-financial-analyst-skill.git
 git push -u origin main
 ```
 

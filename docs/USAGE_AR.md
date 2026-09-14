@@ -125,14 +125,16 @@ Recommendation: راجع BOQ، ثبّت سعر الحديد، ارفع Contingen
 
 | النوع | الصيغ | أمثلة |
 |-------|-------|--------|
-| قوائم مالية | Excel, CSV, PDF, Trial Balance | P&L, BS, Cash Flow |
+| قوائم مالية | Excel, CSV, Trial Balance (+ PDF قراءة يدوية) | P&L, BS, Cash Flow |
 | موازنات | Excel, CSV | Annual Budget, Cost Budget |
 | تدفقات | Excel, CSV | Cash Flow Forecast |
 | مبيعات | Excel, CSV | Sales Register, Reservation Report |
 | تحصيلات | Excel, CSV | Collection Report, Aging |
 | مخزون | Excel, CSV | Unit Inventory (Available/Sold) |
-| تكاليف | Excel, CSV, PDF | BOQ, Cost Report, IPC |
+| تكاليف | Excel, CSV (+ PDF قراءة يدوية) | BOQ, Cost Report, IPC |
 | إدارة | PDF, Excel, MD | Board Pack |
+
+> **ملاحظة PDF:** استيراد Excel/CSV تلقائي عبر `data_loader.py` (production-ready). أما PDF فيُقرأ عبر قدرات الـ Agent (manual extraction) — التحليل التلقائي الكامل لـ PDF في الـ Roadmap (v1.2).
 
 ---
 

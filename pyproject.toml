@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "real-estate-financial-analyst-skill"
-version = "1.0.0"
+version = "1.1.0"
 description = "Professional Senior Real Estate Financial Analyst Skill for AI Agents — Production-ready financial modeling, analysis, and reporting for real estate development companies."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -12,7 +12,7 @@ license = {text = "MIT"}
 authors = [{name = "Real Estate Financial Analyst Skill", email = "skill@real-estate-finance.ai"}]
 keywords = ["real-estate", "financial-analysis", "financial-modeling", "FP&A", "investment-analysis", "ai-skill", "ai-agent"]
 classifiers = [
-  "Development Status :: 5 - Production/Stable",
+  "Development Status :: 4 - Beta",
   "Intended Audience :: Financial and Insurance Industry",
   "Topic :: Office/Business :: Financial :: Investment",
   "License :: OSI Approved :: MIT License",
@@ -33,13 +33,16 @@ dependencies = [
 dev = [
   "pytest>=7.0",
   "pytest-cov>=4.0",
+  "ruff>=0.1.0",
+  "mypy>=1.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/real-estate-financial-analyst-skill"
-Documentation = "https://github.com/your-org/real-estate-financial-analyst-skill#readme"
-Repository = "https://github.com/your-org/real-estate-financial-analyst-skill"
-Changelog = "https://github.com/your-org/real-estate-financial-analyst-skill/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/amrmido71-star/real-estate-financial-analyst-skill"
+Documentation = "https://github.com/amrmido71-star/real-estate-financial-analyst-skill#readme"
+Repository = "https://github.com/amrmido71-star/real-estate-financial-analyst-skill"
+Changelog = "https://github.com/amrmido71-star/real-estate-financial-analyst-skill/blob/main/CHANGELOG.md"
+Issues = "https://github.com/amrmido71-star/real-estate-financial-analyst-skill/issues"
 
 [tool.setuptools.packages.find]
 include = ["skill*", "skill.tools*"]
@@ -52,3 +55,13 @@ addopts = "-v --tb=short"
 [tool.ruff]
 line-length = 100
 target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "C90"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true

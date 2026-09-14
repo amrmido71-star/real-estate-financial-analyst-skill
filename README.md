@@ -4,8 +4,8 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-70%2B%20passing-brightgreen)](#testing)
-[![Version](https://img.shields.io/badge/Version-1.0.0-orange)](#)
+[![Tests](https://img.shields.io/badge/Tests-154%20passing-brightgreen)](#testing)
+[![Version](https://img.shields.io/badge/Version-1.1.0-orange)](#)
 
 **Bilingual:** English + Arabic — responds in user's language.  
 **Domain:** Residential, Commercial, Mixed-Use, Hospitality, Land Development — adaptable to any market (MENA, GCC, Global).  
@@ -29,6 +29,26 @@
 | **Executive Reporting** | Board-ready Executive Summary + Detailed Reports + Variance & Investment Memos |
 
 **Principle:** The analyst thinks like a **CFO advisor, not a calculator** — every number gets a driver, risk, and recommendation. **Never fabricates data.**
+
+---
+
+## 🆕 What's New in v1.1.0 (2026-09-14)
+
+**Major upgrade from v1.0.0 → v1.1.0: 154 tests passing (from 54)**
+
+| Area | Improvement |
+|------|-------------|
+| **NPV Engine** | Unified `Period 0 not discounted`, `calculate_npv_with_initial`, validated `rate > -1` |
+| **Break-even** | Unified `Revenue = Cost/(1-TargetMargin)`, `Price = Revenue/Area`, 0%/10%/20%/50% tests |
+| **Scenario Engine** | True rebuild: Assumption → Revenue → Collections → Cost → Financing → Cash Flow → IRR/NPV/Peak. Supports 10 variables + two-way matrix |
+| **Sensitivity** | One-way + Two-way matrices + Tornado ranking, all rebuild cash flows |
+| **MIRR / Multiple IRR** | `calculate_mirr`, `detect_multiple_irr`, `count_sign_changes`, `irr_with_diagnostics` |
+| **8 New Engines** | `sales_collection`, `construction_analysis` (EAC/S-Curve), `financing` (LTC/LTV/DSCR), `financial_statements` (13 ratios), `portfolio_analysis`, `valuation` (WACC/DCF/Residual/Comparable/Income), `data_loader` (CSV/Excel), `models` (dataclasses) |
+| **Data Validation** | `datetime` parsing, 12 business rules, `calculate_data_quality_score` (0-100), `assess_confidence` |
+| **CI/CD** | `.github/workflows/tests.yml` for Python 3.9-3.12 (pytest+ruff+mypy) |
+| **Docs** | All placeholders fixed (`amrmido71-star`), PDF clarified as Roadmap |
+
+See `CHANGELOG.md` for full details.
 
 ---
 
@@ -73,13 +93,22 @@ real-estate-financial-analyst-skill/
 │   │   ├── project_analysis_report.md
 │   │   ├── variance_report.md
 │   │   └── investment_memo.md
-│   └── tools/ (Python engine)
+│   └── tools/ (Python engine — 14 modules)
 │       ├── financial_calculations.py     # Gross Profit/Margin, EBITDA, Variance, Break-even, ROI
-│       ├── project_metrics.py            # GDV, GDC, Margin, per SQM, Break-even
-│       ├── cashflow_analysis.py          # Cumulative, Peak Funding, DSCR, Runway
-│       ├── investment_metrics.py         # IRR, NPV, Equity Multiple, Payback, ROIC
-│       ├── scenario_analysis.py          # Base/Best/Worst, Sensitivity, Tornado
-│       └── data_validation.py            # Quality checks (missing, duplicates, logic)
+│       ├── project_metrics.py            # GDV, GDC, Margin, per SQM, Break-even (unified)
+│       ├── cashflow_analysis.py          # Detailed periods, Peak Funding, DSCR, quarterly/annual
+│       ├── investment_metrics.py         # IRR, NPV (Period 0), MIRR, Multiple IRR detection
+│       ├── scenario_analysis.py          # True rebuild, Two-way, Tornado
+│       ├── data_validation.py            # datetime, Quality Score, Confidence
+│       ├── sales_collection.py           # Installments, Aging buckets, Velocity
+│       ├── construction_analysis.py      # EAC/ETC, S-Curve, Progress report
+│       ├── financing.py                  # LTC/LTV, Drawdown, DSCR, Headroom
+│       ├── financial_statements.py       # IS/BS/CF + 13 ratios
+│       ├── portfolio_analysis.py         # Multi-project, ranking, concentration
+│       ├── valuation.py                  # WACC/CAPM, DCF, Residual, Comparable, Income
+│       ├── data_loader.py                # CSV/Excel, column normalization
+│       ├── models.py                     # Dataclasses (Project, Unit, Sale...)
+│       └── exceptions.py                 # Domain exceptions
 │
 ├── examples/
 │   ├── example_project.md                # Mock project: 500 units, 62k SQM, 1.75B GDV
@@ -87,12 +116,24 @@ real-estate-financial-analyst-skill/
 │   ├── example_cashflow.csv              # 15-month forecast
 │   └── example_analysis.md               # Full sample output (Executive Summary + Details)
 │
-├── tests/
+├── tests/ (154 tests)
 │   ├── test_financial_calculations.py
 │   ├── test_project_metrics.py
 │   ├── test_cashflow.py
 │   ├── test_investment_metrics.py
-│   └── test_scenarios.py
+│   ├── test_investment_mirr.py          # MIRR & multiple IRR
+│   ├── test_scenarios.py
+│   ├── test_scenario_sensitivity_new.py # True rebuild + two-way
+│   ├── test_data_validation.py
+│   ├── test_sales_collection.py
+│   ├── test_construction_analysis.py
+│   ├── test_financing.py
+│   ├── test_financial_statements.py
+│   ├── test_valuation.py
+│   ├── test_portfolio.py
+│   └── test_integration.py              # Full mock project
+│
+├── .github/workflows/tests.yml           # CI (3.9-3.12)
 │
 └── docs/
     ├── GETTING_STARTED_AR.md             # Arabic quick start
@@ -109,11 +150,11 @@ real-estate-financial-analyst-skill/
 ### 1. Install
 
 ```bash
-git clone https://github.com/your-org/real-estate-financial-analyst-skill.git
+git clone https://github.com/amrmido71-star/real-estate-financial-analyst-skill.git
 cd real-estate-financial-analyst-skill
 python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-pytest -v  # should pass ~70 tests
+pytest -v  # should pass 154 tests
 ```
 
 ### 2. Use in Python (no agent needed)
@@ -224,13 +265,14 @@ Details: `docs/WORKFLOWS_AR.md`
 ## 🧪 Testing
 
 ```bash
-pytest -v
+pytest -v                          # 154 tests
 pytest --cov=skill/tools
-pytest tests/test_investment_metrics.py -v
+pytest tests/test_investment_mirr.py -v
 ```
 
-- 70+ tests covering all engines, edge cases (division by zero, missing data, IRR convergence, scenario logic).
-- Guarded against: division by zero, missing inputs, negative revenue, sold>total, date logic, totals mismatch.
+- **154 tests** covering all 14 engines, edge cases, regression, integration.
+- Includes: division by zero, missing data, IRR convergence, MIRR/multiple IRR, scenario rebuild, two-way sensitivity, S-Curve, aging buckets, WACC, portfolio, DCF.
+- Guarded against: division by zero, missing inputs, negative revenue, sold>total, date logic (datetime), totals mismatch.
 
 ---
 
@@ -286,7 +328,7 @@ git init
 git add .
 git commit -m "feat: initial release — Real Estate Financial Analyst Skill v1.0.0"
 git branch -M main
-git remote add origin https://github.com/your-org/real-estate-financial-analyst-skill.git
+git remote add origin https://github.com/amrmido71-star/real-estate-financial-analyst-skill.git
 git push -u origin main
 ```
 
@@ -304,11 +346,13 @@ See `CONTRIBUTING.md` for contribution guidelines.
 
 ## 🗺️ Roadmap
 
-- [ ] Excel ingestion helpers (auto-parse P&L / Trial Balance)
-- [ ] PDF financial statement parser
+- [x] Excel/CSV ingestion helpers (`data_loader.py` — CSV/Excel via pandas/openpyxl)
+- [ ] PDF financial statement parser — **planned, not yet implemented** (see `docs/TROUBLESHOOTING_AR.md`)
 - [ ] IFRS 15 Revenue Recognition automation
 - [ ] Interactive dashboard generator (HTML)
 - [ ] Multi-currency FX handling
+
+> **Note on PDF:** README v1.0 claimed PDF support — corrected in v1.1.0. PDF is on Roadmap, not implemented. CSV/Excel is production-ready.
 
 ---
 
@@ -328,4 +372,4 @@ MIT — see `LICENSE`.
 
 Crafted for Senior Financial Analysts who refuse to be just calculators.
 
-> **Version 1.0.0 — 2026-09-14 — Production Ready**
+> **Version 1.1.0 — 2026-09-14 — Production Ready (154 tests passing)**

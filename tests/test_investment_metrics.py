@@ -16,12 +16,15 @@ def test_npv():
     npv = calculate_npv(cash_flows, 0.10)
     assert npv == pytest.approx(4.13, abs=0.02)
 
-    # With initial_investment separate
+    # With initial_investment separate — use dedicated helper
+    from skill.tools.investment_metrics import calculate_npv_with_initial
     cash_flows2 = [60, 60]
-    npv2 = calculate_npv(cash_flows2, 0.10, initial_investment=100)
-    # This computes 60/(1.1)^0 + 60/(1.1)^1 -100 = 60 +54.545-100=14.545 — different convention
-    # So test the primary usage
+    npv2 = calculate_npv_with_initial(cash_flows2, 0.10, initial_investment=100)
+    # Combined = [-100 at t0, 60 at t1, 60 at t2] => -100+54.545+49.586=4.132
     assert npv2 is not None
+    assert npv2 == pytest.approx(4.132, abs=0.01)
+    # Also test period 0 not discounted
+    assert calculate_npv([-500, 0, 0], 0.5) == -500
 
     # Zero discount
     assert calculate_npv([-100, 50, 50], 0.0) == 0.0

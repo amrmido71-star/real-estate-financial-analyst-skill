@@ -1,0 +1,45 @@
+name: Tests & Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install ruff mypy pytest pytest-cov
+
+      - name: Lint with ruff
+        run: |
+          ruff check skill/ tests/ || true
+
+      - name: Type check with mypy
+        run: |
+          mypy skill/tools --ignore-missing-imports || true
+
+      - name: Run tests with pytest
+        run: |
+          pytest -v --tb=short --cov=skill/tools --cov-report=term-missing
+
+      - name: Verify financial formulas (regression)
+        run: |
+          pytest tests/test_financial_calculations.py tests/test_project_metrics.py tests/test_investment_metrics.py -v
+
