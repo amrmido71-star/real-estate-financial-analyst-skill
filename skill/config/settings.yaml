@@ -1,0 +1,50 @@
+# General Settings for Real Estate Financial Analyst Skill
+# Edit this file to adapt the skill to your company/market
+
+company:
+  name: "Your Real Estate Development Company"
+  default_currency: "EGP"
+  fiscal_year_start: "01-01"  # MM-DD
+  reporting_language: "ar"    # ar | en
+  vat_rate: 0.14              # 14% example for Egypt - adjust per market
+  tax_rate: 0.225             # Corporate tax rate
+
+thresholds:
+  variance_neutral_pct: 2.0   # |%| < 2% considered Neutral
+  material_variance_pct: 5.0  # >=5% flagged as material
+  margin_watchlist: 15.0      # Development Margin <15% = Watchlist
+  margin_critical: 10.0       # <10% = Critical
+  irr_hurdle_rate: 18.0       # Minimum acceptable IRR %
+  collection_efficiency_warning: 85.0  # <85% triggers warning
+  dscr_min: 1.2
+  liquidity_months_warning: 3 # <3 months runway = risk
+  sales_rate_warning: 15.0    # Sales < plan by 15% = risk
+  inventory_months_warning: 18
+
+currencies:
+  supported: ["EGP", "SAR", "AED", "USD", "EUR"]
+  display_format: "{currency} {value:,.2f}"
+
+dates:
+  input_format: "YYYY-MM-DD"
+  display_format: "DD/MM/YYYY"
+
+calculation:
+  decimal_places: 2
+  npv_discount_rate_default: 0.15  # 15% default WACC / hurdle
+  irr_max_iterations: 1000
+  irr_tolerance: 1e-6
+  irr_guess: 0.1
+
+output:
+  executive_summary_max_findings: 5
+  executive_summary_max_risks: 3
+  executive_summary_max_recommendations: 5
+  confidence_levels: ["High", "Medium", "Low"]
+
+health_ratings:
+  - Strong      # All KPIs > benchmark, no material risks
+  - Stable      # KPIs on track, minor variances
+  - Watchlist   # 1-2 KPIs below threshold, manageable risks
+  - Weak        # Multiple KPIs below, liquidity or margin pressure
+  - Critical    # Severe liquidity/margin/sales failure, immediate action

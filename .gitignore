@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+.env
+*.pth
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+coverage.xml
+*.cover
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Env & Secrets
+.env.local
+.env.*.local
+secrets.yaml
+credentials.json
+*.key
+*.pem
+
+# OS
+.DS_Store
+ehthumbs.db
+Desktop.ini
+
+# Project specific - large data
+*.xlsx
+!examples/*.csv
+uploads/
+temp/
+output/
+reports/
+
+# Logs
+*.log
+logs/
+
+# Arena / Cache
+.arena/
+.cache/
+.mypy_cache/
+.ruff_cache/

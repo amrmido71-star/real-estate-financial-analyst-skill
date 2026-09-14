@@ -1,0 +1,92 @@
+# Financial Rules & Validation Thresholds
+# These rules enforce data quality and prevent calculation errors
+
+validation:
+  revenue:
+    allow_negative: false
+    allow_zero: true
+    error_message: "Revenue cannot be negative — check data entry or credit notes handling"
+  cost:
+    allow_negative: false
+    warning_if_zero: true
+  units:
+    sold_cannot_exceed_total: true
+    available_formula: "total_units - sold_units - reserved_units"
+  area:
+    allow_negative: false
+    allow_zero: false
+    sellable_vs_bua: "sellable_area <= built_up_area"
+  dates:
+    sale_date_not_future: true
+    collection_date_not_before_sale: true
+    construction_date_sequence: true
+  totals:
+    check_sum_units: true
+    check_sum_areas: true
+    check_gdv_equals_sum_unit_price: true
+    check_gdc_equals_sum_costs: true
+  cashflow:
+    cumulative_must_match: true
+    inflow_outflow_signs: true  # Inflows +, Outflows -
+
+variance:
+  favorable_rules:
+    revenue: "actual > budget => Favorable"
+    cost: "actual > budget => Unfavorable"
+    collection: "actual > budget => Favorable"
+    cash_balance: "actual > budget => Favorable"
+  classification:
+    neutral_threshold_pct: 2.0
+    favorable: "Improves profit/cash"
+    unfavorable: "Reduces profit/cash"
+    neutral: "Within tolerance"
+
+profitability:
+  gross_margin:
+    healthy_min: 30.0   # % — varies by segment, see benchmarks
+    warning_min: 20.0
+  net_margin:
+    healthy_min: 15.0
+    warning_min: 8.0
+  ebitda_margin:
+    healthy_min: 25.0
+    warning_min: 15.0
+
+investment:
+  irr:
+    annualize: true
+    period: "yearly"  # or monthly with conversion
+    min_acceptable: 18.0
+  npv:
+    discount_rate_source: "WACC or hurdle rate"
+    positive_means: "Value creating"
+  equity_multiple:
+    good_min: 1.8
+    excellent_min: 2.5
+
+real_estate:
+  land_cost_pct:
+    typical_range: [15, 30]  # % of GDC
+    flag_if_above: 35
+  construction_cost_pct:
+    typical_range: [40, 65]
+    flag_if_above: 70
+  development_margin:
+    target_min: 20.0
+    acceptable_min: 15.0
+    flag_if_below: 10.0
+  contingency:
+    recommended_pct_of_construction: 5.0  # 5-7%
+
+collection:
+  efficiency_formula: "collected / contracted * 100"
+  aging_buckets: ["0-30", "31-60", "61-90", "91-180", "180+"]
+  overdue_flag: ">90 days and >20% of receivables"
+
+health_scoring:
+  weights:
+    profitability: 30
+    liquidity: 25
+    sales_velocity: 20
+    collection: 15
+    leverage: 10

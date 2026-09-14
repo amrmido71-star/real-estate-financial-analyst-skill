@@ -1,0 +1,53 @@
+# Industry Benchmarks for Real Estate Development
+# Sources: Generic MENA benchmarks — adjust per market & segment
+# Values are % unless stated
+
+benchmarks:
+  residential:
+    gross_margin: { min: 25, avg: 35, excellent: 45 }
+    net_margin: { min: 10, avg: 18, excellent: 25 }
+    development_margin: { min: 15, avg: 22, excellent: 30 }
+    sales_rate_monthly_pct: { min: 1.5, avg: 3.0, excellent: 5.0 }  # % of inventory sold per month
+    collection_efficiency_pct: { min: 80, avg: 90, excellent: 95 }
+    construction_cost_per_sqm_EGP: { min: 8000, avg: 12000, excellent: 18000 }  # Adjust per market
+    land_cost_pct_of_gdc: { min: 15, avg: 22, excellent: 30 }
+    construction_pct_of_gdc: { min: 45, avg: 55, excellent: 65 }
+    marketing_pct_of_gdv: { min: 2, avg: 3.5, excellent: 5 }
+    financing_pct_of_gdc: { min: 5, avg: 8, excellent: 12 }
+    irr_hurdle: { min: 15, avg: 20, excellent: 25 }
+    equity_multiple: { min: 1.5, avg: 2.0, excellent: 2.5 }
+    inventory_months_healthy: { max: 18 }  # months of inventory at current sales rate
+    contingency_pct: { recommended: 5 }
+
+  commercial:
+    gross_margin: { min: 30, avg: 40, excellent: 50 }
+    net_margin: { min: 12, avg: 20, excellent: 28 }
+    development_margin: { min: 18, avg: 25, excellent: 32 }
+    irr_hurdle: { min: 16, avg: 22, excellent: 28 }
+
+  mixed_use:
+    gross_margin: { min: 28, avg: 38, excellent: 48 }
+    development_margin: { min: 17, avg: 24, excellent: 32 }
+    irr_hurdle: { min: 16, avg: 21, excellent: 27 }
+
+  hospitality:
+    gross_margin: { min: 20, avg: 30, excellent: 40 }
+    development_margin: { min: 12, avg: 18, excellent: 25 }
+    irr_hurdle: { min: 14, avg: 18, excellent: 22 }
+
+  land_development:
+    gross_margin: { min: 35, avg: 50, excellent: 65 }
+    development_margin: { min: 25, avg: 35, excellent: 50 }
+
+# Cross-segment risk thresholds
+risk_thresholds:
+  peak_funding_vs_gdv_pct: { warning: 30, critical: 45 }
+  receivables_vs_contracted_pct: { warning: 25, critical: 40 }
+  debt_to_equity: { healthy_max: 1.5, warning: 2.0, critical: 2.5 }
+  dscr: { healthy_min: 1.5, warning: 1.2, critical: 1.0 }
+  break_even_sales_pct: { healthy_max: 60, warning: 70, critical: 80 }
+
+notes: >
+  These benchmarks are indicative for MENA region (Egypt, KSA, UAE) 2024-2026.
+  Always calibrate to: (1) project location, (2) segment, (3) scale, (4) market cycle.
+  For accurate peer comparison, replace with company-specific historical averages.
