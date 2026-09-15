@@ -1,7 +1,7 @@
 # التقرير النهائي — V1.2.2 Final Hardening & Financial Integrity
 **التاريخ:** 2026-09-15 (Africa/Cairo)  
 **الإصدار:** 1.2.2  
-**الالتزام المحلي:** `29c6104440b0c5647352f5fc036e159063a49b5a` (main) — tag v1.2.2  
+**الالتزام المحلي:** `1ec9eb6ea3773bc4158bbe701c6ecb22d25ebba9` (main) — tag v1.2.2  
 **الوسم المحلي:** `v1.2.2` (annotated) — **لم يُدفع للـ remote بعد (يتطلب مصادقة)**  
 **السابق:** `3d59807` (v1.2.1) → `be892a3` (v1.2.0)  
 **المستودع:** https://github.com/amrmido71-star/real-estate-financial-analyst-skill.git
