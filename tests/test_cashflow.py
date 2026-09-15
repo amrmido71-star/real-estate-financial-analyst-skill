@@ -1,3 +1,4 @@
+import pytest
 from skill.tools.cashflow_analysis import (
     calculate_cumulative_cashflow,
     calculate_peak_funding,
@@ -109,4 +110,5 @@ def test_example_cashflow():
     assert cum[3] == -32_100_000  # cumulative after 4 periods
 
     peak = calculate_peak_funding(cum)
-    assert peak["peak_period"] == 3 or peak["peak_period"] == 4  # depending
+    assert peak["peak_period"] == 4  # cumulative min at index 4 (-56.9M)
+    assert peak["peak_amount"] == pytest.approx(56_900_000, rel=1e-3)

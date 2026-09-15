@@ -35,8 +35,8 @@ jobs:
         run: |
           mypy skill/tools/integrated_model.py skill/tools/models skill/tools/model_runner.py skill/tools/model_validation.py skill/tools/reporting.py skill/tools/engines --ignore-missing-imports
 
-      - name: Type check full (report only — legacy)
-        continue-on-error: true
+      - name: Type check full (report only — legacy, informational; V1.2 strict above must pass)
+        continue-on-error: true  # legacy report only — do not hide new failures, see V1.2 strict step
         run: |
           mypy skill/tools --ignore-missing-imports
 

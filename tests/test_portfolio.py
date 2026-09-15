@@ -13,8 +13,8 @@ def test_portfolio_basic():
     assert res["weighted_margin_pct"] == pytest.approx(26.923, rel=1e-2)
     assert res["project_count"] == 2
     assert res["total_peak_funding"] == 300000000
-    assert res["portfolio_irr"] is not None
-    assert res["best_project"] is not None
+    assert res["portfolio_irr"] == pytest.approx(0.1003, abs=0.001)
+    assert res["best_project"] == "A"
     assert "ranking" in res
 
 def test_portfolio_concentration():

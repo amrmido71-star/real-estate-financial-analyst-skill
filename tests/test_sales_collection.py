@@ -101,7 +101,7 @@ def test_sales_velocity():
     v = calculate_sales_velocity([10,12,8,15,9,11])
     assert v["avg_monthly"] == pytest.approx(10.833, rel=1e-2)
     assert v["total"] == 65
-    assert v["trend"] in ["up","down","stable","insufficient_data"]
+    assert v["trend"] == "up"  # known increasing sales => up
 
 def test_sales_velocity_up_trend():
     v = calculate_sales_velocity([5,5,5,10,10,10])

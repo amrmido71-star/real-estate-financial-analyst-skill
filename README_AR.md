@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-202%20passing-brightgreen)](#الاختبارات)
-[![Version](https://img.shields.io/badge/Version-1.2.1-orange)](#)
+[![Version](https://img.shields.io/badge/Version-1.2.2-orange)](#)
 
 **ثنائي اللغة:** عربي + إنجليزي — يرد بنفس لغة المستخدم.  
 **التخصص:** سكني، تجاري، متعدد الاستخدامات، ضيافة، تطوير أراضي — قابل للتكيف مع أي سوق (MENA، الخليج، عالمي).  
@@ -36,7 +36,7 @@
 
 ---
 
-### 🆕 الجديد في V1.2.1 (2026-09-15) — التدقيق المالي والتصليب
+### 🆕 الجديد في V1.2.2 (2026-09-15) — التدقيق المالي والتصليب
 
 **تصليب P0 — بدون ميزات جديدة.**
 

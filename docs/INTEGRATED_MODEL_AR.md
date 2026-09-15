@@ -57,6 +57,6 @@ Revenue / Sales / Collection / Construction / Financing / Cashflow / Return / Sc
 
 ## الإصدارات
 
-- V1.2.1 — 2026-09-15 — نموذج متكامل + 166 اختبار
+- V1.2.2 — 2026-09-15 — نموذج متكامل + 166 اختبار
 - التوافق: `from skill.tools.base_models import Unit` ما زال يعمل
 

@@ -1,4 +1,4 @@
-"""Real Estate Financial Analyst Skill — Tools Package v1.2.1 — Integrated Development Model"""
+"""Real Estate Financial Analyst Skill — Tools Package v1.2.2 — Integrated Development Model"""
 
 from .financial_calculations import (
     calculate_gross_profit,
@@ -303,4 +303,4 @@ __all__ = [
     "ScenarioEngine",
 ]
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"

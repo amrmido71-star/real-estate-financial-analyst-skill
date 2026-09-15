@@ -84,7 +84,7 @@ def test_data_quality_score():
     vr = {"errors": ["e1","e2"], "warnings": ["w1"], "info": ["missing field: gdv"]}
     score = calculate_data_quality_score(vr)
     assert score["score"] < 100
-    assert score["confidence"] in ["High","Medium","Low"]
+    assert score["confidence"] == "Medium"  # 2 critical + 1 warning => Medium per scoring
     assert score["critical_errors"] == 2
 
 def test_assess_confidence():

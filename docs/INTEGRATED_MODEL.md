@@ -1,4 +1,4 @@
-# Integrated Real Estate (V1.2.1 Hardening) Development Model V1.2
+# Integrated Real Estate (V1.2.2 Hardening) Development Model V1.2
 
 > Central Orchestrator — `ProjectAssumptions → … → Returns / Scenarios / Risk`  
 > Monthly time engine, unit-level, auditable, bilingual (EN/AR)
@@ -142,6 +142,6 @@ All must be True for CI. See `tests/test_integrated_model.py`.
 
 ## Version
 
-- V1.2.1 — 2026-09-15 — Integrated model production, 166 tests, golden 300 units
+- V1.2.2 — 2026-09-15 — Integrated model production, 166 tests, golden 300 units
 - Backward compat: `from skill.tools.base_models import Unit` still works; `skill/tools/models.py` moved to `base_models.py`
 

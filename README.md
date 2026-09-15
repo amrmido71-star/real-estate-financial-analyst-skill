@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/Tests-202%20passing-brightgreen)](#testing)
-[![Version](https://img.shields.io/badge/Version-1.2.1-orange)](#)
+[![Version](https://img.shields.io/badge/Version-1.2.2-orange)](#)
 
 **Bilingual:** English + Arabic — responds in user's language.  
 **Domain:** Residential, Commercial, Mixed-Use, Hospitality, Land Development — adaptable to any market (MENA, GCC, Global).  
@@ -56,7 +56,7 @@ See `CHANGELOG.md` for full details.
 
 ---
 
-### 🆕 What's New in V1.2.1 (2026-09-15) — Financial Audit & Hardening
+### 🆕 What's New in V1.2.2 (2026-09-15) — Financial Audit & Hardening
 
 **P0 hardening — no new features, just correctness.**
 
@@ -64,7 +64,7 @@ See `CHANGELOG.md` for full details.
 - **CI:** `ruff`/`mypy` strict (0 errors), `pytest` 202 pass, coverage 80% (integrated 93%), golden smoke test
 - **Tests:** +36 hardening (construction not always True, monthly actual units, single source, capitalized, levered, IRR/MIRR/NPV/break-even, scenario rebuild, delay, collection, escalation, EAC, cost, tax, DSCR, validation, audit trail, golden independent, secrets, remote)
 - **Security:** token redacted, remote clean, placeholders fixed
-- **Docs:** all synchronized to 1.2.1
+- **Docs:** all synchronized to 1.2.2
 
 See `CHANGELOG.md` for full audit.
 
@@ -166,7 +166,7 @@ real-estate-financial-analyst-skill/
 │   ├── example_cashflow.csv              # 15-month forecast
 │   └── example_analysis.md               # Full sample output (Executive Summary + Details)
 │
-├── tests/ (154 tests)
+├── tests/ (202 tests)
 │   ├── test_financial_calculations.py
 │   ├── test_project_metrics.py
 │   ├── test_cashflow.py
@@ -204,7 +204,7 @@ git clone https://github.com/amrmido71-star/real-estate-financial-analyst-skill.
 cd real-estate-financial-analyst-skill
 python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-pytest -v  # should pass 154 tests
+pytest -v  # should pass 202 tests
 ```
 
 ### 2. Use in Python (no agent needed)
@@ -315,12 +315,12 @@ Details: `docs/WORKFLOWS_AR.md`
 ## 🧪 Testing
 
 ```bash
-pytest -v                          # 154 tests
+pytest -v                          # 202 tests
 pytest --cov=skill/tools
 pytest tests/test_investment_mirr.py -v
 ```
 
-- **154 tests** covering all 14 engines, edge cases, regression, integration.
+- **202 tests** covering all 14 engines, edge cases, regression, integration.
 - Includes: division by zero, missing data, IRR convergence, MIRR/multiple IRR, scenario rebuild, two-way sensitivity, S-Curve, aging buckets, WACC, portfolio, DCF.
 - Guarded against: division by zero, missing inputs, negative revenue, sold>total, date logic (datetime), totals mismatch.
 
