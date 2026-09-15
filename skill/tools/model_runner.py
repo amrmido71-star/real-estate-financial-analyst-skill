@@ -1,5 +1,5 @@
 """model_runner.py — Runner for Integrated Model: scenarios, sensitivity, portfolio"""
-from typing import List, Dict
+from typing import List, Dict, Optional
 from .integrated_model import IntegratedRealEstateModel
 from .models.assumptions import ProjectAssumptions
 
@@ -12,7 +12,7 @@ class ModelRunner:
         model = IntegratedRealEstateModel(self.base)
         return model.run()
 
-    def run_scenarios(self, best_assumptions: Dict, worst_assumptions: Dict, stress_assumptions: Dict = None):
+    def run_scenarios(self, best_assumptions: Optional[Dict] = None, worst_assumptions: Optional[Dict] = None, stress_assumptions: Optional[Dict] = None):
         # Best/Worst are assumption deltas dicts, not full assumptions
         # We need to apply deltas to base
         from copy import deepcopy

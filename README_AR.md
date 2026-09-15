@@ -4,8 +4,8 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-166%20passing-brightgreen)](#الاختبارات)
-[![Version](https://img.shields.io/badge/Version-1.2.0-orange)](#)
+[![Tests](https://img.shields.io/badge/Tests-202%20passing-brightgreen)](#الاختبارات)
+[![Version](https://img.shields.io/badge/Version-1.2.1-orange)](#)
 
 **ثنائي اللغة:** عربي + إنجليزي — يرد بنفس لغة المستخدم.  
 **التخصص:** سكني، تجاري، متعدد الاستخدامات، ضيافة، تطوير أراضي — قابل للتكيف مع أي سوق (MENA، الخليج، عالمي).  
@@ -32,7 +32,22 @@
 
 ---
 
-## 🆕 الجديد في V1.2.0 (2026-09-15) — النموذج المتكامل
+## 🆕 الجديد في V1.2.0
+
+---
+
+### 🆕 الجديد في V1.2.1 (2026-09-15) — التدقيق المالي والتصليب
+
+**تصليب P0 — بدون ميزات جديدة.**
+
+- **إصلاحات:** `or True`، `avg_price`، تكرار التمويل، مطابقة الدين، ازدواج الفائدة، تضخيم حقوق الملكية
+- **CI:** `ruff`/`mypy` صارم (0 أخطاء)، `pytest` 202 نجاح، تغطية 80%، اختبار ذهبي
+- **اختبارات:** +36 تصليب
+- **أمان:** إخفاء التوكن، تنظيف remote
+
+انظر `CHANGELOG.md` للتفاصيل.
+
+ (2026-09-15) — النموذج المتكامل
 
 **ترقية رئيسية — محرك مركزي يربط كل المحركات شهرياً وعلى مستوى الوحدة وموثق.**
 

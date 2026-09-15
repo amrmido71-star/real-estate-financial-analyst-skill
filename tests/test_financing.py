@@ -65,9 +65,9 @@ def test_facility_headroom():
     res = calculate_facility_headroom(1000000, 600000)
     assert res["headroom"] == 400000
     assert res["utilization_pct"] == 60.0
-    assert res["is_breached"] == False
+    assert not res["is_breached"]
     res2 = calculate_facility_headroom(1000000, 1100000)
-    assert res2["is_breached"] == True
+    assert res2["is_breached"]
 
 def test_levered_vs_unlevered():
     ul = [ -1000000, 200000, 300000]

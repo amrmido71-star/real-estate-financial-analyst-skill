@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "real-estate-financial-analyst-skill"
-version = "1.2.0"
+version = "1.2.1"
 description = "Professional Senior Real Estate Financial Analyst Skill for AI Agents — Production-ready financial modeling, analysis, and reporting for real estate development companies."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -54,14 +54,22 @@ addopts = "-v --tb=short"
 
 [tool.ruff]
 line-length = 100
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "C90"]
 ignore = ["E501"]
 
+[tool.ruff.lint.per-file-ignores]
+"skill/tools/data_loader.py" = ["F401"]
+"skill/tools/models/__init__.py" = ["F401"]
+
+
+[tool.ruff.lint.mccabe]
+max-complexity = 50
+
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true

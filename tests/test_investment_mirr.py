@@ -1,6 +1,6 @@
 import pytest
 from skill.tools.investment_metrics import (
-    calculate_npv, calculate_npv_with_initial, calculate_irr, calculate_mirr,
+    calculate_npv, calculate_npv_with_initial, calculate_mirr,
     count_sign_changes, detect_multiple_irr, irr_with_diagnostics
 )
 
@@ -42,10 +42,10 @@ def test_sign_changes():
 
 def test_detect_multiple():
     has_multi, changes, msg = detect_multiple_irr([-100, 50, -20, 80])
-    assert has_multi == True
+    assert has_multi
     assert changes == 3
     has_multi2, changes2, _ = detect_multiple_irr([-100, 60, 60])
-    assert has_multi2 == False
+    assert not has_multi2
     assert changes2 == 1
 
 def test_mirr_basic():
@@ -67,13 +67,13 @@ def test_irr_diagnostics_unique():
     res = irr_with_diagnostics([-100, 60, 60])
     assert res["irr"] is not None
     assert res["sign_changes"] == 1
-    assert res["has_multiple_risk"] == False
+    assert not res["has_multiple_risk"]
 
 def test_irr_diagnostics_multiple():
     cfs = [-100, 150, -50, 30]
     res = irr_with_diagnostics(cfs)
     assert res["sign_changes"] >= 2
-    assert res["has_multiple_risk"] == True
+    assert res["has_multiple_risk"]
     # Should still try IRR and MIRR
     assert "mirr" in res
 

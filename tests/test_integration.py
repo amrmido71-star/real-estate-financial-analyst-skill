@@ -7,7 +7,6 @@ from skill.tools.project_metrics import calculate_gdv, calculate_gdc, calculate_
 from skill.tools.sales_collection import aggregate_monthly_cash
 from skill.tools.construction_analysis import generate_s_curve
 from skill.tools.financing import build_financing_schedule, levered_vs_unlevered
-from skill.tools.cashflow_analysis import analyze_cashflow
 from skill.tools.investment_metrics import calculate_irr, calculate_npv, calculate_mirr
 from skill.tools.scenario_analysis import run_scenarios
 
@@ -34,7 +33,7 @@ def test_full_project_integration():
     monthly_construction = generate_s_curve(200_000_000, 12, "standard")
     assert sum(monthly_construction) == pytest.approx(200_000_000)
     # Convert to yearly for cash flow: sum per 12
-    yearly_construction = [sum(monthly_construction)]  # 1 year simplified
+    [sum(monthly_construction)]  # 1 year simplified
 
     # Sales: 10 sales @5M avg, with schedule 10/10/40/40?
     sales = []

@@ -3,9 +3,8 @@ data_validation.py — Data Quality Checks for Real Estate Financial Data
 Enhanced with datetime parsing, type validation, business rules, quality scoring
 """
 
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional
 from datetime import datetime, date
-import re
 
 
 def _parse_date(value: Any) -> Optional[date]:
@@ -24,12 +23,12 @@ def _parse_date(value: Any) -> Optional[date]:
     for fmt in formats:
         try:
             return datetime.strptime(s, fmt).date()
-        except:
+        except Exception:
             continue
     # Try ISO with time
     try:
         return datetime.fromisoformat(s).date()
-    except:
+    except Exception:
         return None
 
 
@@ -39,7 +38,7 @@ def _is_numeric(value: Any) -> bool:
     try:
         float(str(value).replace(",", "").replace("EGP","").replace("SAR","").strip())
         return True
-    except:
+    except Exception:
         return False
 
 
@@ -53,7 +52,7 @@ def _to_float(value: Any) -> Optional[float]:
         return None
     try:
         return float(s)
-    except:
+    except Exception:
         return None
 
 
@@ -215,9 +214,9 @@ def validate_cashflow(cashflow_data: Dict[str, Any]) -> Dict[str, List[str]]:
             if v is not None and not _is_numeric(v):
                 errors.append(f"{name}[{i}] not numeric: '{v}'")
 
-    if inflows and any(_to_float(v) is not None and _to_float(v) < 0 for v in inflows if v is not None):
+    if inflows and any(_to_float(v) is not None and _to_float(v) < 0 for v in inflows if v is not None):  # type: ignore[operator]
         warnings.append("Inflows contain negative values — inflows should be positive.")
-    if outflows and any(_to_float(v) is not None and _to_float(v) < 0 for v in outflows if v is not None):
+    if outflows and any(_to_float(v) is not None and _to_float(v) < 0 for v in outflows if v is not None):  # type: ignore[operator]
         warnings.append("Outflows contain negative values — outflows should be positive numbers.")
     if cumulative and inflows and outflows:
         n = min(len(inflows), len(outflows), len(cumulative))
@@ -245,7 +244,7 @@ def validate_cashflow(cashflow_data: Dict[str, Any]) -> Dict[str, List[str]]:
             calc = sum(_to_float(v) or 0 for v in budget_months)
             if abs(calc - budget_total) > 1.0:
                 warnings.append(f"Budget total mismatch: reported {budget_total:,.0f} vs sum(months) {calc:,.0f}.")
-        except:
+        except Exception:
             pass
     if not inflows and not outflows:
         info.append("No cash flow data provided — cannot analyze liquidity.")
@@ -254,7 +253,7 @@ def validate_cashflow(cashflow_data: Dict[str, Any]) -> Dict[str, List[str]]:
     if period_dates:
         parsed = [_parse_date(d) for d in period_dates]
         for i in range(1, len(parsed)):
-            if parsed[i] and parsed[i-1] and parsed[i] < parsed[i-1]:
+            if parsed[i] and parsed[i-1] and parsed[i] < parsed[i-1]:  # type: ignore[operator]
                 errors.append(f"Period dates out of order: {period_dates[i-1]} -> {period_dates[i]}")
     return {"errors": errors, "warnings": warnings, "info": info}
 
@@ -292,7 +291,7 @@ def validate_transactions(transactions: List[Dict]) -> Dict[str, List[str]]:
     """Check duplicate transaction IDs, missing fields"""
     errors = []
     warnings = []
-    info = []
+    info = []  # type: ignore[var-annotated]
     seen = set()
     for idx, t in enumerate(transactions):
         tid = t.get("transaction_id", t.get("id", f"txn_{idx}"))

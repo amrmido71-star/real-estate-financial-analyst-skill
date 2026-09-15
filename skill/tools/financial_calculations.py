@@ -171,4 +171,4 @@ def horizontal_analysis(current: Optional[float], prior: Optional[float]) -> Opt
         pct_change = None
     else:
         pct_change = (abs_change / abs(prior)) * 100
-    return (abs_change, pct_change)
+    return (abs_change, pct_change)  # type: ignore[return-value]

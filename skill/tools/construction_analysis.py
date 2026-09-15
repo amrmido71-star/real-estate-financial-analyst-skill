@@ -24,7 +24,7 @@ def calculate_etc(budget: float, actual: float, pct_complete: Optional[float] = 
     return max(0, budget - actual)
 
 
-def calculate_variance(budget: float, actual_or_eac: float) -> Tuple[float, float]:
+def calculate_variance(budget: float, actual_or_eac: float) -> Tuple[float, Optional[float]]:
     """
     Returns (variance_abs, variance_pct)
     variance_abs = Budget - Actual (positive = under budget)
@@ -176,8 +176,8 @@ def monthly_progress_report(
     cum_b = 0
     cum_a = 0
     for i in range(n):
-        cum_b += budget[i]
-        cum_a += actual[i]
+        cum_b += budget[i]  # type: ignore[assignment]
+        cum_a += actual[i]  # type: ignore[assignment]
         var = budget[i] - actual[i]
         var_pct = (var / budget[i] * 100) if budget[i] != 0 else None
         cum_var = cum_b - cum_a

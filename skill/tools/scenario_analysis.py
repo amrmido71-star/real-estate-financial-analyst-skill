@@ -6,8 +6,7 @@ Supports Base/Best/Worst with full rebuild: Assumption -> Revenue -> Collection 
 from typing import Optional, List, Dict, Callable
 import copy
 from .investment_metrics import calculate_irr, calculate_npv
-from .project_metrics import calculate_gdv, calculate_gdc, calculate_development_margin
-from .cashflow_analysis import analyze_cashflow
+from .project_metrics import calculate_gdv
 
 
 def _rebuild_financials(base: Dict, assumptions: Dict) -> Dict:
@@ -185,7 +184,7 @@ def _rebuild_financials(base: Dict, assumptions: Dict) -> Dict:
             min_cum = min(cum) if cum else 0
             rebuilt["peak_funding"] = abs(min_cum) if min_cum < 0 else 0
             rebuilt["cumulative"] = cum
-        except:
+        except Exception:
             rebuilt["peak_funding"] = None
     return rebuilt
 
@@ -295,9 +294,9 @@ def run_sensitivity_analysis(
         elif assumption_key == "interest_rate_delta":
             # pct is absolute points if variable is interest_rate, but changes_pct is like [-2,-1,0,1,2]
             # For sensitivity, pct is points (e.g., -2 => -2pts)
-            assumptions[assumption_key] = pct
+            assumptions[assumption_key] = pct  # type: ignore[assignment]
         else:
-            assumptions[assumption_key] = pct
+            assumptions[assumption_key] = pct  # type: ignore[assignment]
 
         if calc_fn:
             # Merge base + assumptions and apply calc_fn
@@ -352,15 +351,15 @@ def run_two_way_sensitivity(
             if k1 == "delay_months":
                 assumptions[k1] = int(v1)
             elif k1 == "interest_rate_delta":
-                assumptions[k1] = v1
+                assumptions[k1] = v1  # type: ignore[assignment]
             else:
-                assumptions[k1] = v1
+                assumptions[k1] = v1  # type: ignore[assignment]
             if k2 == "delay_months":
                 assumptions[k2] = int(v2)
             elif k2 == "interest_rate_delta":
-                assumptions[k2] = v2
+                assumptions[k2] = v2  # type: ignore[assignment]
             else:
-                assumptions[k2] = v2
+                assumptions[k2] = v2  # type: ignore[assignment]
             res = _rebuild_financials(base_case, assumptions)
             val = res.get(metric)
             row.append(val)
@@ -422,7 +421,7 @@ def tornado_sensitivity(
     return tornado
 
 
-def format_scenario_table(scenarios: Dict[str, Dict], metrics: List[str] = None) -> str:
+def format_scenario_table(scenarios: Dict[str, Dict], metrics: Optional[List[str]] = None) -> str:
     if metrics is None:
         metrics = ["gdv", "gdc", "profit", "margin_pct", "irr_pct", "npv", "peak_funding"]
     header = "| Metric | Best | Base | Worst |"

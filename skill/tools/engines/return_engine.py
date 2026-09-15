@@ -1,5 +1,5 @@
 """return_engine.py — IRR, NPV, MOIC, DSCR, break-even, valuation"""
-from typing import List
+from typing import List, Optional
 from ..investment_metrics import calculate_irr, calculate_npv, calculate_mirr, calculate_payback_period
 from ..valuation import calculate_wacc, dcf_valuation
 from ..project_metrics import calculate_development_margin, calculate_break_even_revenue
@@ -24,4 +24,4 @@ class ReturnEngine:
     @staticmethod
     def break_even_revenue(gdc: float, target_margin: float): return calculate_break_even_revenue(gdc, target_margin)
     @staticmethod
-    def dcf(cfs: List[float], rate: float, tv: float = None): return dcf_valuation(cfs, rate, tv)
+    def dcf(cfs: List[float], rate: float, tv: Optional[float] = None): return dcf_valuation(cfs, rate, tv)

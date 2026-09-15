@@ -3,10 +3,9 @@ sales_collection.py — Sales & Collection Engine
 Handles unit inventory, booking/contract/cancellation, installment schedules, collections, aging, velocity
 """
 
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional
 from datetime import date, timedelta
 from collections import defaultdict
-import math
 
 
 def build_collection_schedule(
@@ -85,7 +84,7 @@ def aggregate_monthly_cash(
     """
     Aggregate sales into monthly cash collections dict: {"YYYY-MM": amount}
     """
-    monthly = defaultdict(float)
+    monthly = defaultdict(float)  # type: ignore[var-annotated]
     for s in sales:
         cv = s.get("contracted_value", 0)
         sd = s.get("sale_date")
@@ -93,7 +92,7 @@ def aggregate_monthly_cash(
         hd = None
         if handover_dates and s.get("unit_code"):
             hd = handover_dates.get(s["unit_code"])
-        events = build_collection_schedule(cv, sd, sched, hd)
+        events = build_collection_schedule(cv, sd, sched, hd)  # type: ignore[arg-type]
         events = spread_monthly_collections(events, collection_rate, delay_months)
         for ev in events:
             key = ev["due_date"].strftime("%Y-%m")

@@ -2,7 +2,7 @@
 financial_statements.py — Income Statement, Balance Sheet, Cash Flow Analysis + Ratios
 """
 
-from typing import Optional, Dict, List
+from typing import Optional, Dict
 
 
 def analyze_income_statement(
@@ -155,7 +155,7 @@ def calculate_ratios(
 
     # Liquidity
     current_ratio = (current_assets / current_liab) if current_liab else None
-    quick_ratio = ((current_assets - inventory) / current_liab) if current_liab else None
+    quick_ratio = ((current_assets - inventory) / current_liab) if current_liab else None  # type: ignore[operator]
     cash_ratio = (cash / current_liab) if current_liab else None
 
     # Leverage

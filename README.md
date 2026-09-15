@@ -4,8 +4,8 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-166%20passing-brightgreen)](#testing)
-[![Version](https://img.shields.io/badge/Version-1.2.0-orange)](#)
+[![Tests](https://img.shields.io/badge/Tests-202%20passing-brightgreen)](#testing)
+[![Version](https://img.shields.io/badge/Version-1.2.1-orange)](#)
 
 **Bilingual:** English + Arabic — responds in user's language.  
 **Domain:** Residential, Commercial, Mixed-Use, Hospitality, Land Development — adaptable to any market (MENA, GCC, Global).  
@@ -52,7 +52,23 @@ See `CHANGELOG.md` for full details.
 
 ---
 
-## 🆕 What's New in v1.2.0 (2026-09-15) — Integrated Development Model
+## 🆕 What's New in v1.2.0
+
+---
+
+### 🆕 What's New in V1.2.1 (2026-09-15) — Financial Audit & Hardening
+
+**P0 hardening — no new features, just correctness.**
+
+- **Bugs fixed:** `or True` bypass, `avg_price` approximation, financing duplication, debt reconciliation, interest double-count, equity inflation
+- **CI:** `ruff`/`mypy` strict (0 errors), `pytest` 202 pass, coverage 80% (integrated 93%), golden smoke test
+- **Tests:** +36 hardening (construction not always True, monthly actual units, single source, capitalized, levered, IRR/MIRR/NPV/break-even, scenario rebuild, delay, collection, escalation, EAC, cost, tax, DSCR, validation, audit trail, golden independent, secrets, remote)
+- **Security:** token redacted, remote clean, placeholders fixed
+- **Docs:** all synchronized to 1.2.1
+
+See `CHANGELOG.md` for full audit.
+
+ (2026-09-15) — Integrated Development Model
 
 **Major upgrade — Central Orchestrator that links ALL engines end-to-end (monthly, unit-level, audited).**
 

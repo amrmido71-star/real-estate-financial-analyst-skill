@@ -15,7 +15,7 @@ class CollectionEngine:
 
     @staticmethod
     def aggregate_monthly(sales: List[Dict], collection_assumptions, handover_map: Dict) -> Dict[str, float]:
-        monthly = defaultdict(float)
+        monthly: Dict[str, float] = defaultdict(float)
         for s in sales:
             cv = s["contracted_value"]
             sd = s["sale_date"]

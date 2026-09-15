@@ -2,16 +2,8 @@
 test_integrated_model.py — V1.2 Integrated Model: golden case, reconciliation,
 scenarios cascade, sensitivity, delay, debt sanity, returns
 """
-import pytest
-from datetime import date
-from skill.tools.models.assumptions import (
-    ProjectAssumptions, ProductAssumptions, LandAssumptions,
-    ConstructionAssumptions, SalesAssumptions, CollectionAssumptions,
-    FinancingAssumptions, CostAssumptions
-)
 from skill.tools.integrated_model import IntegratedRealEstateModel
 from skill.tools.model_runner import ModelRunner
-from skill.tools.model_validation import validate_reconciliation
 from examples.golden_project.assumptions import golden_assumptions, best_case_delta, worst_case_delta
 
 def test_golden_project_reconciliation():
@@ -147,7 +139,6 @@ def test_monthly_engine_periods():
     ass = golden_assumptions()
     result = IntegratedRealEstateModel(ass).run()
     # Monthly periods = months between start and end inclusive
-    from datetime import date
     months = (ass.end_date.year - ass.start_date.year)*12 + (ass.end_date.month - ass.start_date.month) + 1
     assert len(result.periods) == months
     assert result.periods[0].label == "2027-01"

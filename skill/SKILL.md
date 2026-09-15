@@ -1,5 +1,5 @@
 # Real Estate Financial Analyst Skill — SKILL.md
-> **Version:** 1.2.0  
+> **Version:** 1.2.1  
 > **Update:** 2026-09-15 — Integrated Real Estate Development Model (Central Orchestrator)  
 > **Role:** Senior Real Estate Financial Analyst  
 > **Domain:** Real Estate Development | Financial Modeling | FP&A | Investment Analysis  
@@ -164,6 +164,10 @@ TDC, GDV, Gross Profit, Development Margin, Project IRR, Project NPV, Equity IRR
 - Break-even Sales % = GDC / GDV
 
 ---
+
+## 7.1 Integrated (Updated V1.2.1 — Hardening: or True removed, monthly actual units, single source financing, debt reconciliation, interest/equity clarified)
+
+> **V1.2.1 Hardening:** Construction variance with escalation, sales actual not avg, FinancingEngine single source, monthly_rate=annual/12 documented, capitalized vs cash separated, equity = -injection+distribution, levered vs unlevered documented, IRR/MIRR/NPV/break-even hardened.
 
 ## 7.1 Integrated Real Estate Development Model (V1.2 — Central Orchestrator)
 

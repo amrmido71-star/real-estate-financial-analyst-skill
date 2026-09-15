@@ -24,7 +24,7 @@ def test_portfolio_concentration():
     ]
     res = analyze_portfolio(projects)
     assert res["concentration"]["largest_pct"] == 90.0
-    assert res["concentration"]["is_concentrated"] == True
+    assert res["concentration"]["is_concentrated"]
 
 def test_portfolio_single():
     projects = [

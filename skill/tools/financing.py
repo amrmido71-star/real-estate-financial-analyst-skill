@@ -3,7 +3,7 @@ financing.py — Financing Engine for Real Estate Development
 Supports Equity/Debt, LTC, LTV, Drawdown, Repayment, Interest, DSCR, Headroom
 """
 
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional
 
 
 def calculate_ltc(debt: float, total_cost: float) -> Optional[float]:

@@ -34,7 +34,7 @@ def test_spread_collections_efficiency():
     assert len(adjusted) == 2
     assert adjusted[0]["due_amount"] == 80000
     assert adjusted[1]["due_amount"] == 20000
-    assert adjusted[1]["is_delayed"] == True
+    assert adjusted[1]["is_delayed"]
 
 def test_aggregate_monthly_cash():
     sales = [
@@ -95,7 +95,7 @@ def test_aging_buckets():
     summary = calculate_aging_summary(buckets)
     assert summary["total_overdue"] == 100000  # 10+20+30+40
     assert summary["overdue_90_plus"] == 70000
-    assert summary["risk_flag"] == True  # 70% >20%
+    assert summary["risk_flag"]  # 70% >20%
 
 def test_sales_velocity():
     v = calculate_sales_velocity([10,12,8,15,9,11])

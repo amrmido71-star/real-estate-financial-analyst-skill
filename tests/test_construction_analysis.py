@@ -49,7 +49,7 @@ def test_analyze_construction_overrun():
     assert res["eac"] == 1100000
     assert res["variance_budget_vs_eac_abs"] == -100000
     assert res["classification_eac"] == "Unfavorable"
-    assert res["overrun_risk"] == True
+    assert res["overrun_risk"]
 
 def test_analyze_construction_on_track():
     res = analyze_construction(budget=1000000, actual=500000, etc=500000, pct_complete=50)

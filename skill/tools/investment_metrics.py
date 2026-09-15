@@ -6,7 +6,7 @@ Pure Python — no external dependencies beyond stdlib.
 """
 
 from typing import Optional, List, Tuple
-from .exceptions import InvalidDiscountRateError, InvalidCashFlowError, MultipleIRRError, NoIRRError
+from .exceptions import InvalidDiscountRateError
 
 
 def calculate_npv(cash_flows: List[float], discount_rate: float) -> Optional[float]:
@@ -81,7 +81,7 @@ def _npv_at(cash_flows: List[float], rate: float) -> float:
                     total += 1e308 if cf > 0 else -1e308
                 else:
                     total += 0
-            except:
+            except Exception:
                 total += 0
         if total > 1e308:
             total = 1e308
@@ -233,7 +233,7 @@ def calculate_mirr(cash_flows: List[float], finance_rate: float, reinvest_rate: 
         return None
     # pv_neg is negative, so -pv_neg is positive
     mirr = (fv_pos / -pv_neg) ** (1 / n) - 1
-    return mirr
+    return mirr  # type: ignore[no-any-return]
 
 
 def calculate_irr_annualized(monthly_cash_flows: List[float], guess: float = 0.1) -> Optional[float]:

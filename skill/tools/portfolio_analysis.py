@@ -2,7 +2,7 @@
 portfolio_analysis.py — Multi-project portfolio analytics
 """
 
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict
 from .investment_metrics import calculate_irr, calculate_npv
 
 

@@ -1,4 +1,3 @@
-import pytest
 from skill.tools.cashflow_analysis import (
     calculate_cumulative_cashflow,
     calculate_peak_funding,

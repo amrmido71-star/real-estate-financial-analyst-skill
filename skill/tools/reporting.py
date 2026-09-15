@@ -1,5 +1,5 @@
 """reporting.py — Management Pack & Dashboard from ModelResult"""
-from typing import Dict, List
+from typing import Dict, List, Optional
 from .integrated_model import ModelResult
 
 def build_dashboard(result: ModelResult) -> Dict:
@@ -73,7 +73,7 @@ def build_executive_summary(result: ModelResult) -> str:
 """
     return summary
 
-def build_management_pack(result: ModelResult, scenarios: Dict = None, sensitivity: List = None) -> Dict:
+def build_management_pack(result: ModelResult, scenarios: Optional[Dict] = None, sensitivity: Optional[List] = None) -> Dict:
     """Structured pack for reporting layer — does NOT recalculate, uses result directly"""
     pack = {
         "executive_summary": build_executive_summary(result),

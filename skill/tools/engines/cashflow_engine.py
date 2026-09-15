@@ -1,5 +1,5 @@
 """cashflow_engine.py — Monthly cash flow waterfall"""
-from typing import List
+from typing import List, Optional
 from ..cashflow_analysis import build_detailed_cashflow, analyze_cashflow, aggregate_to_quarterly, aggregate_to_annual
 from ..base_models import CashFlowPeriod
 
@@ -9,7 +9,7 @@ class CashflowEngine:
         return build_detailed_cashflow(periods, opening_cash, period_type)
 
     @staticmethod
-    def analyze(inflows: List[float], outflows: List[float], financing: List[float] = None, opening: float = 0):
+    def analyze(inflows: List[float], outflows: List[float], financing: Optional[List[float]] = None, opening: float = 0):
         return analyze_cashflow(inflows, outflows, financing, opening)
 
     @staticmethod

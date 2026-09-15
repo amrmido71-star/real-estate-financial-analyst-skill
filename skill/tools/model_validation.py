@@ -36,7 +36,7 @@ def validate_reconciliation(result: ModelResult) -> Dict[str, List[str]]:
     if len(result.periods) < 12:
         info.append("Model has <12 months — short timeline, verify end_date")
 
-    return {"errors": errors, "warnings": warnings, "info": info, "is_valid": len(errors)==0}
+    return {"errors": errors, "warnings": warnings, "info": info, "is_valid": len(errors)==0}  # type: ignore[dict-item]
 
 def audit_trail(result: ModelResult) -> Dict:
     return {

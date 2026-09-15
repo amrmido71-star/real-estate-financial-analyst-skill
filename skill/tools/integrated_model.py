@@ -16,6 +16,7 @@ from .investment_metrics import calculate_irr, calculate_npv, calculate_mirr
 from .construction_analysis import generate_s_curve
 from .sales_collection import build_collection_schedule
 from .exceptions import InvalidAssumptionError
+from .engines.financing_engine import FinancingEngine  # single source for financing
 
 
 def _months_between(start: date, end: date) -> int:
@@ -268,7 +269,7 @@ class IntegratedRealEstateModel:
         a = self.assumptions
         schedule = a.collections.schedule()
         handover_date = _add_months(a.construction.start_date or a.start_date, a.construction.duration_months)
-        monthly = defaultdict(float)
+        monthly: Dict[str, float] = defaultdict(float)
         for value, sdate in zip(contracted_sales, sale_dates):
             events = build_collection_schedule(value, sdate, schedule, handover_date)
             for ev in events:
@@ -336,9 +337,15 @@ class IntegratedRealEstateModel:
         contingency_total = base_cost * a.costs.contingency_pct/100 if not a.construction.contingency_included_in_gdc else 0
         # If contingency included, it's part of GDC but not separate cash flow? We'll still show as cost
 
-        # Build periods
+        # Build periods — P0: build actual sales map for accurate monthly aggregation
+        # sales_by_label: YYYY-MM -> sum of contracted values for that month (unit-level truth)
+        sales_by_label: Dict[str, float] = defaultdict(float)
+        # Also need contracted_sales and sale_dates from _build_sales_plan; gdv already sum
+        for sdate, cval in zip(sale_dates, contracted_sales):
+            sales_by_label[_period_label(sdate)] += cval
+
         periods: List[MonthlyRow] = []
-        # For financing: track debt
+        # For financing: track debt — single source of truth is this model (FinancingEngine wraps this logic)
         opening_debt = 0.0
         opening_cash = 0.0
         opening_equity = 0.0
@@ -349,20 +356,12 @@ class IntegratedRealEstateModel:
             pdate = _add_months(a.start_date, m)
             label = _period_label(pdate)
             row = MonthlyRow(period=m, label=label, date=pdate)
-            # Sales
+            # Sales — actual unit-level aggregation (P0 fix: no avg approximation)
             row.units_sold = monthly_units[m] if m < len(monthly_units) else 0
-            # Contracted sales for this month
-            # Need to map: which sales fall in this month? We have monthly_units, but contracted value per month = units_sold * avg price?
-            # For simplicity: contracted this month = sum of contracted_sales for units sold this month
-            # We can compute by slicing sale_dates
-            # Instead, approximate: avg price * units_sold
-            avg_price = (gdv / len(units)) if units else 0
-            row.contracted_sales = row.units_sold * avg_price
-            # More accurate: if we have sale_dates, count
-            # Let's compute accurately:
-            # Find how many sale_dates == this month's date month
-            # Simpler: use monthly_units and avg_price
-            # For escalated, avg may be off, but ok.
+            # Contracted sales: sum of actual unit prices for units sold in this month label
+            # Built from sale_dates/contracted_sales mapping to avoid avgPrice distortion
+            # sales_by_label is computed before loop (see below)
+            row.contracted_sales = sales_by_label.get(label, 0.0)
 
             # Collections
             row.collections = collections_map.get(label, 0.0)
@@ -397,17 +396,16 @@ class IntegratedRealEstateModel:
                                          row.marketing_cost + row.commission_cost + row.government_fees +
                                          row.overheads + row.other_costs + row.contingency_cost)
 
-            # Financing: LTC-based draw + repayment
+            # Financing: LTC-based draw + interest — Single Source via FinancingEngine
             total_month_need = row.total_development_cost - row.collections
-            target_debt_this_month = row.total_development_cost * a.financing.debt_pct/100
-            if total_month_need > 0:
-                row.debt_draw = min(target_debt_this_month, total_month_need)
-            else:
-                row.debt_draw = 0
-
-            monthly_rate = a.financing.interest_rate_annual_pct/100 / 12
+            row.debt_draw = FinancingEngine.debt_draw_for_gap(
+                total_cost=row.total_development_cost,
+                debt_pct=a.financing.debt_pct,
+                collections=row.collections,
+                total_need=total_month_need,
+            )
             row.opening_debt = opening_debt
-            row.interest_accrued = opening_debt * monthly_rate
+            row.interest_accrued = FinancingEngine.monthly_interest(opening_debt, a.financing.interest_rate_annual_pct)
             # Debt repayment: use surplus collections after costs+interest to repay
             surplus_after_costs = row.collections - row.total_development_cost - (0 if a.financing.interest_payment_mode=="capitalized" else row.interest_accrued)
             # Actually repayment comes from surplus after covering costs
@@ -418,6 +416,9 @@ class IntegratedRealEstateModel:
             else:
                 row.debt_repayment = 0
 
+            # Capitalized vs Cash — P0: never double-count
+            # capitalized: interest → debt (cash 0), closing = opening + draw + accrued - repay
+            # cash: interest → cash outflow, closing = opening + draw - repay
             if a.financing.interest_payment_mode == "capitalized":
                 row.interest_cash = 0
                 row.closing_debt = opening_debt + row.debt_draw + row.interest_accrued - row.debt_repayment
@@ -578,20 +579,37 @@ class IntegratedRealEstateModel:
             if abs(p.opening_cash + p.net_cash_flow - p.closing_cash) > 0.01:
                 cash_ok = False
                 break
-        # Debt: opening + draw + interest_cap - repayment = closing
+        # Debt: opening + draw + interest_cap - repayment = closing — via FinancingEngine single source
         debt_ok = True
         for p in periods:
-            expected_closing = p.opening_debt + p.debt_draw + (p.interest_accrued if self.assumptions.financing.interest_payment_mode=="capitalized" else 0) - p.debt_repayment
-            if abs(expected_closing - p.closing_debt) > 0.01:
+            capitalized = self.assumptions.financing.interest_payment_mode == "capitalized"
+            # Use engine's reconciliation check for consistency
+            if not FinancingEngine.debt_reconciliation_check(
+                opening=p.opening_debt,
+                draw=p.debt_draw,
+                interest_accrued=p.interest_accrued,
+                repayment=p.debt_repayment,
+                closing=p.closing_debt,
+                capitalized=capitalized,
+                tol=0.01,
+            ):
                 debt_ok = False
                 break
-        # Construction budget
+        # Construction reconciliation — P0 harden (no bypass)
         total_cons = sum(p.construction_cost for p in periods)
         budget = self.assumptions.construction.budget
-        # Allow escalation and contingency differences
-        cons_ok = abs(total_cons - budget) < 1000 or True  # skip strict
-        # EAC
-        # For now, just check periods not empty
+        # Expected with escalation (compound annual on budget)
+        months_escal = self.assumptions.construction.duration_months
+        esc = self.assumptions.construction.escalation_annual_pct
+        if esc:
+            expected_cons = budget * (1 + esc/100) ** (months_escal/12)
+        else:
+            expected_cons = float(budget)
+        variance = total_cons - expected_cons
+        variance_pct = (variance / expected_cons * 100) if expected_cons else 0
+        # Tolerance: 0.5% or 1000 EGP absolute (to handle rounding)
+        tolerance = max(expected_cons * 0.005, 1000.0)
+        cons_ok = abs(variance) <= tolerance
 
         return {
             "units_total": total_units,
@@ -608,12 +626,17 @@ class IntegratedRealEstateModel:
             "construction_check": cons_ok,
             "total_construction": total_cons,
             "budget": budget,
+            "expected_construction": expected_cons,
+            "construction_variance": variance,
+            "construction_variance_pct": variance_pct,
+            "construction_tolerance": tolerance,
+            "construction_status": "PASS" if cons_ok else "FAIL",
         }
 
     def _financial_health(self, returns: Dict, periods: List[MonthlyRow], reconciliation: Dict) -> Tuple[str, int, Dict]:
         """Determine health: Critical/Watch/Healthy with score 0-100"""
         score = 100  # noqa: F841
-        issues = []  # noqa: F841
+        issues: List[str] = []  # noqa: F841
         # Profitability
         profit = returns.get("gdv", 0) - returns.get("gdc", 0) if "gdv" in returns else 0  # noqa: F841
         # Use actual gdv/gdc from result

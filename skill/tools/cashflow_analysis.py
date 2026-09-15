@@ -4,7 +4,6 @@ Enhanced: supports Monthly/Quarterly/Annual, detailed breakdown, peak funding, D
 """
 
 from typing import Optional, List, Dict
-from datetime import date
 from .models import CashFlowPeriod
 
 

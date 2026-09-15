@@ -3,8 +3,7 @@ data_loader.py — Unified ingestion for CSV/Excel
 Normalizes columns, validates schema, returns standardized structures
 """
 
-from typing import Dict, List, Optional, Tuple, Any
-import re
+from typing import Dict, List, Tuple, Any
 
 try:
     import pandas as pd
@@ -117,7 +116,7 @@ def df_to_records(df) -> List[Dict]:
         df_renamed = df.rename(columns=col_map)
         # Strip whitespace from string columns
         records = df_renamed.to_dict(orient="records")
-        return records
+        return records  # type: ignore[no-any-return]
     elif isinstance(df, list):
         # Already list of dicts, normalize keys
         normalized = []
@@ -148,6 +147,6 @@ def clean_numeric_series(series, fill_na: float = 0.0) -> List[float]:
             continue
         try:
             cleaned.append(float(s))
-        except:
+        except Exception:
             cleaned.append(fill_na)
     return cleaned
