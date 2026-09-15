@@ -1,0 +1,54 @@
+{
+  "project": "East Cairo Compound — Golden Case",
+  "model_version": "1.2.0",
+  "assumption_hash": "4b48d8fc",
+  "currency": "EGP",
+  "base_case": {
+    "gdv": 2832200000.0,
+    "gdc": 1846558232.0,
+    "profit": 985641767.0,
+    "margin_pct": 34.8,
+    "profit_on_cost_pct": 53.4,
+    "total_units": 300,
+    "sold_units": 300,
+    "peak_funding": 305865252.0,
+    "peak_debt": 835881180.0,
+    "equity_irr_pct": 30.4,
+    "equity_npv": 122599192.0,
+    "moic": 1.97,
+    "health": "Healthy",
+    "health_score": 100,
+    "reconciliation": {
+      "cash": true,
+      "debt": true,
+      "gdv": true
+    }
+  },
+  "scenarios": {
+    "best": {
+      "irr_pct": 85.9,
+      "npv": 598328816.0,
+      "profit": 1315796819.0,
+      "margin_pct": 42.2
+    },
+    "worst": {
+      "irr_pct": null,
+      "npv": -313465107.0,
+      "profit": 504411306.0,
+      "margin_pct": 19.8,
+      "note": "IRR N/A — stress destroys equity timing, NPV negative at 14%"
+    },
+    "stress": {
+      "irr_pct": null,
+      "npv": -320601886.0,
+      "profit": 296159270.0,
+      "margin_pct": 12.3
+    }
+  },
+  "sensitivity": {
+    "selling_price_minus10_irr": 7.2,
+    "selling_price_plus10_irr": 50.2
+  },
+  "tolerance_pct": 3.0,
+  "notes": "Bands ±3% for CI. Re-run run.py to refresh. All values audited via IntegratedRealEstateModel V1.2 monthly engine. NPV uses monthly discount (14% annual → 1.10% monthly). IRR annualized from monthly via (1+r)^12-1."
+}

@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-09-15
+
+### Added — Integrated Real Estate Development Model (V1.2 Central Orchestrator)
+- **Standard Data Model:** `skill/tools/models/assumptions.py` — `ProjectAssumptions` (Land/Product/Sales/Collection/Construction/Cost/Financing) with `validate()`, `assumption_hash()` for audit trail, datetime-based timelines
+- **Central Orchestrator:** `skill/tools/integrated_model.py` — `IntegratedRealEstateModel` implements monthly time engine (36-month default), waterfall `Assumption → Revenue → Collections → Costs → Financing → Cash Flow → Profit → IRR/NPV/Peak`, unit-level inventory (300 units golden), S-Curve construction, LTC-based financing (capitalized vs cash interest), levered/unlevered/equity cash flows, IRR/NPV/MIRR/MOIC/Payback, reconciliation checks, health scoring, dashboard, run_id+timestamp+hash audit trail
+- **Model Runner:** `skill/tools/model_runner.py` — `ModelRunner` orchestrates base/best/worst/stress scenarios with true cascade rebuild, one-way & two-way sensitivity matrices, tornado helper
+- **Validation & Reporting:** `model_validation.py` (cash/debt/GDV reconciliation, `validate_reconciliation`, `audit_trail`) + `reporting.py` (`build_dashboard`, `build_executive_summary`, `build_management_pack` — decision Recommended/Watch/Not Recommended linked to hurdle 18%)
+- **8 Engines Layer:** `skill/tools/engines/` — `revenue_engine`, `sales_engine`, `collection_engine`, `construction_engine`, `financing_engine`, `cashflow_engine`, `return_engine` (IRR/NPV/MOIC/DSCR/WACC/Break-even/Valuation), `scenario_engine` (Monte Carlo optional, tornado, two-way)
+- **Models Package Refactor:** `skill/tools/base_models.py` (legacy Unit/CostItem/Sale/Collection/Project preserved for backward compat) + `skill/tools/models/__init__.py` re-exports + 8 typed aliases `project/unit/sales/collections/construction/financing/cashflow/valuation`
+- **Golden Project:** `examples/golden_project/` — flagship East Cairo Compound (300 units, 85k sqm sellable @34k EGP, 1.05B construction, 420M land) — `assumptions.py` + `run.py` (full pipeline demo) + `expected_metrics.json` + `README.md`; audited band GDV 2.83B / GDC 1.85B / Profit 985M / 34.8% margin / 30.4% equity IRR / 122M NPV @14% / 1.97 MOIC / Healthy 100; stress scenarios rebuild end-to-end
+- **Tests:** `tests/test_integrated_model.py` — 12 new tests (golden reconciliation, returns sanity, peak equity/debt, scenario cascade, sensitivity monotonic, two-way shape, delay impact, debt LTC sanity, inventory, escalation, monthly engine, hash stability) — total 166 passing
+- **Investor Metrics Fix:** overflow-safe `_npv_at` / `_npv_derivative` for large cash flows (billions) monthly IRR
+- **Financing Fix:** capitalized interest + debt repayment from surplus, equity injection/distribution split, peak funding via levered cumulative minimum (not net-zero after equity)
+- **Infra:** pyproject 1.2.0, exports wired in `skill/tools/__init__.py`, ruff fixes, engines wrapping legacy modules
+
+### Changed
+- `skill/tools/models.py` → `skill/tools/base_models.py` + `skill/tools/models/` package with backward-compat `base_models` alias — no breaking import change (still `from skill.tools.base_models import Unit`)
+- `skill/tools/investment_metrics.py` hardened for billion-scale monthly cash flows
+
+### Fixed
+- Peak funding previously 0 (net after equity injection) — now correctly peak funding = |min levered cumulative| (305M base)
+- Equity IRR previously inflated due to missing debt repayment — now correctly 30.4% base (vs 104% before)
+- Golden project previously empty — now audited flagship
+
 ## [1.1.0] - 2026-09-14
 
 ### Added

@@ -58,7 +58,35 @@ def calculate_npv_simple(cash_flows: List[float], discount_rate: float) -> Optio
 def _npv_at(cash_flows: List[float], rate: float) -> float:
     total = 0.0
     for t, cf in enumerate(cash_flows):
-        total += cf / ((1 + rate) ** t)
+        try:
+            denom = (1 + rate) ** t
+            # Guard extremes
+            if denom == 0 or denom == float('inf') or denom == float('-inf'):
+                if cf > 0:
+                    total += float('inf') if denom == 0 else 0
+                elif cf < 0:
+                    total += float('-inf') if denom == 0 else 0
+                continue
+            contrib = cf / denom
+            # Clamp infinities
+            if contrib == float('inf') or contrib == float('-inf'):
+                # Overflow -> treat as large magnitude
+                contrib = 1e308 if cf > 0 else -1e308
+            total += contrib
+        except (OverflowError, ZeroDivisionError, ValueError):
+            # If overflow, contribution is effectively 0 for large denom or huge for small denom
+            try:
+                if rate < -0.5:
+                    # small denom -> huge magnitude
+                    total += 1e308 if cf > 0 else -1e308
+                else:
+                    total += 0
+            except:
+                total += 0
+        if total > 1e308:
+            total = 1e308
+        if total < -1e308:
+            total = -1e308
     return total
 
 
@@ -67,7 +95,16 @@ def _npv_derivative(cash_flows: List[float], rate: float) -> float:
     for t, cf in enumerate(cash_flows):
         if t == 0:
             continue
-        total += -t * cf / ((1 + rate) ** (t + 1))
+        try:
+            denom = (1 + rate) ** (t + 1)
+            if denom == 0 or denom == float('inf') or denom == float('-inf'):
+                continue
+            contrib = -t * cf / denom
+            if contrib == float('inf') or contrib == float('-inf'):
+                continue
+            total += contrib
+        except (OverflowError, ZeroDivisionError, ValueError):
+            continue
     return total
 
 

@@ -1,4 +1,4 @@
-"""Real Estate Financial Analyst Skill — Tools Package v1.1"""
+"""Real Estate Financial Analyst Skill — Tools Package v1.2 — Integrated Development Model"""
 
 from .financial_calculations import (
     calculate_gross_profit,
@@ -134,6 +134,32 @@ from .exceptions import (
     MultipleIRRError, NoIRRError
 )
 
+
+# V1.2 Integrated Development Model — Central Orchestrator
+from .models.assumptions import (
+    ProjectAssumptions, LandAssumptions, ProductAssumptions,
+    SalesAssumptions, CollectionAssumptions, ConstructionAssumptions,
+    CostAssumptions, FinancingAssumptions,
+)
+from .integrated_model import IntegratedRealEstateModel, ModelResult, MonthlyRow
+from .model_runner import ModelRunner
+from .model_validation import validate_reconciliation, audit_trail
+from .reporting import build_dashboard, build_executive_summary, build_management_pack
+from .exceptions import (
+    ModelValidationError, InconsistentTimelineError, FundingShortfallError,
+    InvalidCapitalStructureError, InvalidScenarioError, ReconciliationError,
+)
+
+# V1.2 Engines
+from .engines.revenue_engine import RevenueEngine
+from .engines.sales_engine import SalesEngine
+from .engines.collection_engine import CollectionEngine
+from .engines.construction_engine import ConstructionEngine
+from .engines.financing_engine import FinancingEngine
+from .engines.cashflow_engine import CashflowEngine
+from .engines.return_engine import ReturnEngine
+from .engines.scenario_engine import ScenarioEngine
+
 __all__ = [
     "calculate_gross_profit", "calculate_gross_margin", "calculate_operating_profit",
     "calculate_ebitda", "calculate_ebit", "calculate_net_profit", "calculate_net_margin",
@@ -149,6 +175,17 @@ __all__ = [
     "build_financing_schedule", "analyze_income_statement", "analyze_balance_sheet",
     "analyze_portfolio", "calculate_wacc", "dcf_valuation",
     "load_csv", "load_excel", "Unit", "Project",
+    # V1.2 Integrated Model
+    "ProjectAssumptions", "LandAssumptions", "ProductAssumptions",
+    "SalesAssumptions", "CollectionAssumptions", "ConstructionAssumptions",
+    "CostAssumptions", "FinancingAssumptions",
+    "IntegratedRealEstateModel", "ModelResult", "MonthlyRow",
+    "ModelRunner", "validate_reconciliation", "audit_trail",
+    "build_dashboard", "build_executive_summary", "build_management_pack",
+    "ModelValidationError", "InconsistentTimelineError", "FundingShortfallError",
+    "InvalidCapitalStructureError", "InvalidScenarioError", "ReconciliationError",
+    "RevenueEngine", "SalesEngine", "CollectionEngine", "ConstructionEngine",
+    "FinancingEngine", "CashflowEngine", "ReturnEngine", "ScenarioEngine",
 ]
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"

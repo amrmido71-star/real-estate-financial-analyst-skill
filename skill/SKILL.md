@@ -1,5 +1,6 @@
 # Real Estate Financial Analyst Skill — SKILL.md
-> **Version:** 1.0.0  
+> **Version:** 1.2.0  
+> **Update:** 2026-09-15 — Integrated Real Estate Development Model (Central Orchestrator)  
 > **Role:** Senior Real Estate Financial Analyst  
 > **Domain:** Real Estate Development | Financial Modeling | FP&A | Investment Analysis  
 > **Languages:** Arabic + English (bilingual)  
@@ -163,6 +164,36 @@ TDC, GDV, Gross Profit, Development Margin, Project IRR, Project NPV, Equity IRR
 - Break-even Sales % = GDC / GDV
 
 ---
+
+## 7.1 Integrated Real Estate Development Model (V1.2 — Central Orchestrator)
+
+**Single Source of Truth:** `ProjectAssumptions` (7 groups) → `IntegratedRealEstateModel` → monthly waterfall → reconciliation → dashboard.
+
+```
+ProjectAssumptions
+  ├─ Land, Product (unit mix / sellable / price + growth), Sales (velocity / schedule / discount)
+  ├─ Collections (5-bucket schedule: booking/contract/during-build/handover/post + collection rate + lag)
+  ├─ Construction (budget / duration / s_curve / escalation / contingency)
+  ├─ Costs (design/consult/infra/gov/marketing/commission/overheads/other/contingency)
+  ├─ Financing (debt 50% / interest 13.5% capitalized / LTC 55% / bullet)
+  └─ Project (start 2027-01-01 / end 2029-12-31 / discount 14% / hurdle 18% / currency EGP)
+        ↓
+IntegratedRealEstateModel (monthly engine)
+  ├─ _build_units (unit-level inventory)
+  ├─ _build_sales_plan (velocity or monthly schedule)
+  ├─ _build_collections (build_collection_schedule + handover anchor + collection_rate)
+  ├─ _build_construction_curve (generate_s_curve)
+  └─ _build_monthly_cashflow (Month row: collections, costs, debt draw/repay, equity in/dist, net, cum)
+        ↓
+Returns (annualized)  GDV/GDC/Profit/Margin + unlevered/levered/equity IRR/NPV + MIRR + MOIC + payback
+        ↓
+Reconciliation (units, GDV vs sum units, collections vs expected, cash & debt closing) + Health 0-100 + Dashboard
+
+Audit Trail: run_id = {project_code}-{hash8}-{timestamp}, assumption_hash MD5(sorted assumptions)
+Golden Project: 300 units → run `python examples/golden_project/run.py` to reproduce (GDV 2.83B / 34.8% / 30.4% IRR)
+Reporting: `build_dashboard` + `build_executive_summary` (decision vs hurdle) + `build_management_pack` (scenarios-linked)
+Scenario Engine: true cascade Assumption→Revenue→Collection→Cost→Financing→Cash→IRR/NPV/Peak (no KPI scaling)
+Engines Layer: 8 engines wrap legacy modules (no logic duplication)
 
 ## 8. Scenario Analysis
 

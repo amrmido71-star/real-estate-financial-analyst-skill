@@ -4,8 +4,8 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-154%20passing-brightgreen)](#الاختبارات)
-[![Version](https://img.shields.io/badge/Version-1.1.0-orange)](#)
+[![Tests](https://img.shields.io/badge/Tests-166%20passing-brightgreen)](#الاختبارات)
+[![Version](https://img.shields.io/badge/Version-1.2.0-orange)](#)
 
 **ثنائي اللغة:** عربي + إنجليزي — يرد بنفس لغة المستخدم.  
 **التخصص:** سكني، تجاري، متعدد الاستخدامات، ضيافة، تطوير أراضي — قابل للتكيف مع أي سوق (MENA، الخليج، عالمي).  
@@ -32,6 +32,29 @@
 
 ---
 
+## 🆕 الجديد في V1.2.0 (2026-09-15) — النموذج المتكامل
+
+**ترقية رئيسية — محرك مركزي يربط كل المحركات شهرياً وعلى مستوى الوحدة وموثق.**
+
+- نموذج بيانات موحّد `ProjectAssumptions` (7 مجموعات) + تحقق + hash
+- المحرك المركزي `IntegratedRealEstateModel` — شلال شهري `افتراض → إيراد → تحصيل → تكلفة → تمويل → تدفق → ربح → IRR/NPV`
+- محرك زمني 36 شهر، S-Curve، تصعيد سعري، سرعة مبيعات، جدول أقساط → تحصيل شهري
+- تمويل LTC 50%، فائدة مرسملة/نقدية، سحب/سداد، ذروة تمويل عبر التراكمي المدعوم
+- عوائد: IRR/NPV غير مدعوم/مدعوم/حقوق ملكية (سنوي)، MIRR، MOIC، فترة استرداد
+- مطابقة: وحدات، GDV، تحصيلات، نقد ودين + صحة 0-100 + لوحة مؤشرات
+- سيناريوهات وحساسية: إعادة بناء حقيقية، أفضل/أسوأ/ضغط، مصفوفات أحادية وثنائية
+- طبقة 8 محركات تغلف المحركات القديمة
+- المشروع الذهبي: شرق القاهرة 300 وحدة، GDV 2.83B / هامش 34.8% / IRR 30.4% — موثق
+- 166 اختبار ناجح
+
+```python
+from examples.golden_project.assumptions import golden_assumptions
+from skill.tools.integrated_model import IntegratedRealEstateModel
+result = IntegratedRealEstateModel(golden_assumptions()).run()
+print(result.gdv, result.profit, result.equity_irr)
+```
+
+---
 ## 📁 هيكل المشروع
 
 ```

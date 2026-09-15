@@ -36,3 +36,21 @@ class NoIRRError(FinancialSkillError):
 
 class InvalidAssumptionError(FinancialSkillError):
     pass
+
+class ModelValidationError(FinancialSkillError):
+    pass
+
+class InconsistentTimelineError(FinancialSkillError):
+    pass
+
+class FundingShortfallError(FinancialSkillError):
+    pass
+
+class InvalidCapitalStructureError(FinancialSkillError):
+    pass
+
+class InvalidScenarioError(FinancialSkillError):
+    pass
+
+class ReconciliationError(FinancialSkillError):
+    pass

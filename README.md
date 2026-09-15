@@ -4,8 +4,8 @@
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-154%20passing-brightgreen)](#testing)
-[![Version](https://img.shields.io/badge/Version-1.1.0-orange)](#)
+[![Tests](https://img.shields.io/badge/Tests-166%20passing-brightgreen)](#testing)
+[![Version](https://img.shields.io/badge/Version-1.2.0-orange)](#)
 
 **Bilingual:** English + Arabic — responds in user's language.  
 **Domain:** Residential, Commercial, Mixed-Use, Hospitality, Land Development — adaptable to any market (MENA, GCC, Global).  
@@ -49,6 +49,40 @@
 | **Docs** | All placeholders fixed (`amrmido71-star`), PDF clarified as Roadmap |
 
 See `CHANGELOG.md` for full details.
+
+---
+
+## 🆕 What's New in v1.2.0 (2026-09-15) — Integrated Development Model
+
+**Major upgrade — Central Orchestrator that links ALL engines end-to-end (monthly, unit-level, audited).**
+
+| Area | V1.2 |
+|------|------|
+| **Standard Data Model** | `ProjectAssumptions` (7 sub-assumptions) + `validate()` + `assumption_hash()` |
+| **Central Orchestrator** | `IntegratedRealEstateModel` — monthly waterfall `Assumption → Revenue → Collection → Cost → Financing → CashFlow → Profit → IRR/NPV/Peak` |
+| **Time Engine** | `Month` base, 36 periods default, S-Curve, price escalation, velocity schedule, installment→monthly collections |
+| **Financing** | LTC 50%, capitalized/cash interest, draw/repayment/equity injection/distribution, peak funding via levered cum min |
+| **Returns** | Unlevered/Levered/Equity IRR (annualized), NPV @ monthly discount, MIRR, MOIC, Payback |
+| **Reconciliation** | Units, GDV vs sum units, collections vs rate, cash & debt closing checks, audit trail run_id/hash |
+| **Health & Reporting** | Health 0-100, Watch/Healthy/Critical, dashboard, executive summary decision vs hurdle 18% |
+| **Scenarios & Sensitivity** | True cascade rebuild, best/worst/stress deltas, one-way & two-way matrices, tornado, Monte Carlo optional |
+| **Engines Layer** | 8 engines wrapping legacy: revenue/sales/collection/construction/financing/cashflow/return/scenario |
+| **Golden Project** | East Cairo 300 units, GDV 2.83B / GDC 1.85B / 34.8% / 30.4% IRR — audited, CI-gated, 12 new tests |
+| **Tests** | 166 passing (was 154) — `test_integrated_model.py` covers golden, scenarios, sensitivity, delay, LTC |
+
+**Quick Start:**
+
+```python
+from examples.golden_project.assumptions import golden_assumptions
+from skill.tools.integrated_model import IntegratedRealEstateModel
+
+ass = golden_assumptions()
+result = IntegratedRealEstateModel(ass).run()
+print(f"GDV {result.gdv:,.0f}  Profit {result.profit:,.0f}  IRR {result.equity_irr:.1%}  Health {result.financial_health}")
+# Run full demo: python examples/golden_project/run.py
+```
+
+
 
 ---
 
