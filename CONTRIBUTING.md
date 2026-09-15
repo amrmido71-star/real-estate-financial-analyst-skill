@@ -6,7 +6,7 @@ Thank you for considering contributing to `real-estate-financial-analyst-skill`!
 
 ### 1. Fork & Clone
 ```bash
-git clone https://github.com/your-org/real-estate-financial-analyst-skill.git
+git clone https://github.com/amrmido71-star/real-estate-financial-analyst-skill.git
 cd real-estate-financial-analyst-skill
 ```
 

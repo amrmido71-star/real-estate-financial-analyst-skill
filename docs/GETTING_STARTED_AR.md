@@ -31,7 +31,7 @@
 ### خطوة 1: تحميل المشروع
 
 ```bash
-git clone https://github.com/your-org/real-estate-financial-analyst-skill.git
+git clone https://github.com/amrmido71-star/real-estate-financial-analyst-skill.git
 cd real-estate-financial-analyst-skill
 ```
 
