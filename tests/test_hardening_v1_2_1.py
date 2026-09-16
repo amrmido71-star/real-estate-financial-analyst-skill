@@ -506,7 +506,7 @@ def test_golden_independent_checks():
     assert result.moic == pytest.approx(expected_moic, rel=0.001)
     # IRR cross-check: unlevered IRR should be > discount if NPV positive
     if result.unlevered_npv and result.unlevered_npv > 0:
-        assert result.unlevered_irr is not None and result.unlevered_irr > 0.14
+        assert result.unlevered_irr == __import__('pytest').approx(0.2125, abs=0.01)  # golden unlevered 21.25%
 
 
 def test_no_placeholder_urls():

@@ -1,7 +1,7 @@
 # التقرير النهائي — V1.2.2 Final Hardening & Financial Integrity
 **التاريخ:** 2026-09-15 (Africa/Cairo)  
 **الإصدار:** 1.2.2  
-**الالتزام المحلي:** `1ec9eb6ea3773bc4158bbe701c6ecb22d25ebba9` (main) — tag v1.2.2  
+**الالتزام المحلي:** `2d6c1ad632fd58154266b2b32188933dcbeab053` (main) — tag v1.2.2  
 **الوسم المحلي:** `v1.2.2` (annotated) — **لم يُدفع للـ remote بعد (يتطلب مصادقة)**  
 **السابق:** `3d59807` (v1.2.1) → `be892a3` (v1.2.0)  
 **المستودع:** https://github.com/amrmido71-star/real-estate-financial-analyst-skill.git
@@ -166,7 +166,7 @@ Success: no issues found in 39 source files
 - **Test:** `test_no_secrets_in_repo` يفحص `ghp_[A-Za-z0-9]{20,}` ويستثني ملف الاختبار نفسه — PASS
 - **Git history — CRITICAL:**
   ```bash
-  git show be892a3:docs/FINAL_REPORT_V1.2_AR.md | grep ghp_
+  git show 3d15c67:docs/FINAL_REPORT_V1.2_AR.md | grep ghp_  # بعد التنظيف: 0، قبل: ghp_v857...
   # <TOKEN_REDACTED> (مبتور) — مرئي في التاريخ
   ```
   **الإجراء المطلوب:** إلغاء التوكن فورًا https://github.com/settings/tokens → توليد PAT جديد → (اختياري) `git filter-repo --invert-paths --path docs/FINAL_REPORT_V1.2_AR.md --force` + force push بموافقة الإدارة (لم نُنفذ force لتجنب فقدان التاريخ)

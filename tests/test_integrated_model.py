@@ -22,17 +22,17 @@ def test_golden_project_reconciliation():
 
 def test_golden_project_returns_sanity():
     result = IntegratedRealEstateModel(golden_assumptions()).run()
-    # Equity IRR positive base, NPV positive
-    assert result.equity_irr is not None
+    # Equity IRR positive base, NPV positive — golden 30.38% IRR, 122M NPV
+    assert result.equity_irr == __import__('pytest').approx(0.3038, abs=0.01)
     assert result.equity_irr > 0.15
-    assert result.equity_npv is not None
+    assert result.equity_npv == __import__('pytest').approx(122599192, rel=0.15)
     assert result.equity_npv > 0
     # Peak funding sanity: >0 and < GDV*0.5
     assert 100_000_000 < result.peak_funding < result.gdv * 0.5
-    # MOIC >1.5
-    assert result.moic is not None and result.moic > 1.5
+    # MOIC >1.5 — golden 1.97
+    assert result.moic == __import__('pytest').approx(1.97, abs=0.05)
     # Levered IRR ≈ equity IRR when no tax nuance (both derived from same levered)
-    assert result.levered_irr is not None
+    assert result.levered_irr == __import__('pytest').approx(0.3038, abs=0.01)
     # Check monthly annualization: monthly < annual
     assert result.equity_irr > 0  # annualized > monthly
     assert result.dashboard["returns"]["equity_irr"] == result.equity_irr
