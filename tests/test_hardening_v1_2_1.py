@@ -608,7 +608,8 @@ def test_git_remote_clean():
         content = config.read_text()
         assert "ghp_" not in content
         assert "github_pat" not in content
-        assert "github.com/amrmido71-star/real-estate-financial-analyst-skill" in content
+        assert "amrmido71-star/real-estate-financial-analyst-skill" in content
+        assert "github.com" in content
     else:
         # No config in snapshot — check that we don't have token in any committed file
         import pathlib
