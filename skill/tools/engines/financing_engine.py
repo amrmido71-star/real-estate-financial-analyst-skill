@@ -13,7 +13,7 @@ class FinancingEngine:
         return build_financing_schedule(total_debt, drawdown, interest_annual, repayment, capitalize_interest=capitalize)
 
     @staticmethod
-    def debt_draw_for_gap(total_cost: float, debt_pct: float, collections: float = 0, total_need: float | None = None) -> float:
+    def debt_draw_for_gap(total_cost: float, debt_pct: float, collections: float = 0, total_need: Optional[float] = None) -> float:
         """
         Single source for LTC-based draw.
         Logic: need = total_cost - collections (or total_need if provided)

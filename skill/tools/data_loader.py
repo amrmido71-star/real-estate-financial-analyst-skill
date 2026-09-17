@@ -3,7 +3,7 @@ data_loader.py — Unified ingestion for CSV/Excel
 Normalizes columns, validates schema, returns standardized structures
 """
 
-from typing import Dict, List, Tuple, Any
+from typing import Any, Dict, List, Tuple, Union
 
 try:
     import pandas as pd
@@ -74,7 +74,7 @@ def load_csv(filepath: str, **kwargs) -> Any:
             return rows
 
 
-def load_excel(filepath: str, sheet_name: int | str = 0, **kwargs) -> Any:
+def load_excel(filepath: str, sheet_name: Union[int, str] = 0, **kwargs) -> Any:
     if not HAS_PANDAS:
         raise ImportError("pandas required for Excel loading")
     if not HAS_OPENPYXL:
