@@ -1,0 +1,22 @@
+{
+  "project_code": "GOLDEN-001",
+  "project_name": "East Cairo Compound — Golden Case",
+  "currency": "EGP",
+  "sellable_area_sqm": 85000,
+  "gdv": 2832200000,
+  "gdc": 1846558232,
+  "profit": 985641767,
+  "margin_pct": 34.8,
+  "equity_irr": 0.304,
+  "npv": 122599192,
+  "moic": 1.97,
+  "assumptions": {
+    "land_cost": 420000000,
+    "construction_budget": 1050000000,
+    "discount_rate": 14.0,
+    "hurdle_rate": 18.0,
+    "debt_pct": 50,
+    "interest_annual_pct": 13.5
+  },
+  "notes": "Copy of golden_project expected_metrics.json — independent expected, not copied from result object"
+}
