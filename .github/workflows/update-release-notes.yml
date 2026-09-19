@@ -14,24 +14,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Test gh auth and view release
+      - name: Update release via curl
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          echo "Testing gh auth"
-          gh auth status || echo "gh auth status failed"
-          echo "Viewing release"
-          gh release view v1.2.2 --json tagName,name,body --jq '{tag:.tagName, title:.name, len:(.body|length)}'
-          echo "Listing assets"
-          gh release view v1.2.2 --json assets --jq '.assets[].name'
-          echo "Test done"
-
-      - name: Update release notes
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Updating release notes from docs/RELEASE_NOTES_V1.2.2_FINAL.md"
-          cat docs/RELEASE_NOTES_V1.2.2_FINAL.md | head -n 20
-          gh release edit v1.2.2 --title "v1.2.2 — Final Hardening & Financial Integrity" --notes-file docs/RELEASE_NOTES_V1.2.2_FINAL.md --verbose
-          echo "Edit done"
-          gh release view v1.2.2 --json body --jq .body | head -n 50
+          set -x
+          echo "Testing token"
+          echo "GH_TOKEN length: ${#GH_TOKEN}"
+          echo "GITHUB_TOKEN length: ${#GITHUB_TOKEN}"
+          echo "Trying gh release view"
+          gh release view v1.2.2 --json tagName || echo "gh view failed"
+          echo "Trying curl with GH_TOKEN"
+          curl -s -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/releases/tags/v1.2.2 | head -c 500
+          echo ""
+          echo "Trying curl PATCH to update release"
+          # Read notes file and escape for JSON
+          NOTES=$(cat docs/RELEASE_NOTES_V1.2.2_FINAL.md | python3 -c "import json,sys; print(json.dumps(sys.stdin.read())[1:-1])")
+          # Actually use python to create JSON
+          python3 << 'PY'
+          import json
+          with open('docs/RELEASE_NOTES_V1.2.2_FINAL.md', 'r') as f:
+              body = f.read()
+          data = {
+              "tag_name": "v1.2.2",
+              "name": "v1.2.2 — Final Hardening & Financial Integrity",
+              "body": body
+          }
+          with open('/tmp/patch.json', 'w') as out:
+              json.dump(data, out)
+          print("patch.json created, length", len(body))
+          PY
+          cat /tmp/patch.json | head -c 1000
+          echo ""
+          RELEASE_ID=$(curl -s -H "Authorization: Bearer $GH_TOKEN" https://api.github.com/repos/${{ github.repository }}/releases/tags/v1.2.2 | python3 -c "import json,sys; d=json.load(sys.stdin); print(d['id'])")
+          echo "Release ID: $RELEASE_ID"
+          curl -s -X PATCH -H "Authorization: Bearer $GH_TOKEN" -H "Content-Type: application/json" --data @/tmp/patch.json https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID | head -c 1000
+          echo ""
+          echo "Done"
