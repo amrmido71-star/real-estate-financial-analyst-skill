@@ -1,0 +1,83 @@
+name: Release V1.2.2
+
+on:
+  push:
+    tags:
+      - 'v1.2.2'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify release content exists
+        run: |
+          set -e
+          echo "Verifying release content for $GITHUB_REF_NAME ($GITHUB_SHA)"
+          test -f docs/FINAL_REPORT_V1_2_2.md || { echo "Missing docs/FINAL_REPORT_V1_2_2.md"; exit 1; }
+          test -f distribution/real-estate-financial-analyst-v1.2.2.zip || { echo "Missing distribution/real-estate-financial-analyst-v1.2.2.zip"; exit 1; }
+          test -f distribution/real-estate-financial-analyst-v1.2.2.tar.gz || { echo "Missing distribution/real-estate-financial-analyst-v1.2.2.tar.gz"; exit 1; }
+          test -f distribution/SHA256SUMS || { echo "Missing distribution/SHA256SUMS"; exit 1; }
+          test -f distribution/MANIFEST.md || { echo "Missing distribution/MANIFEST.md"; exit 1; }
+          echo "All required files present:"
+          ls -lh docs/FINAL_REPORT_V1_2_2.md distribution/
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Release QA — pytest + checksum
+        run: |
+          set -e
+          python --version
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pytest -q
+          echo "Checksum verification:"
+          (cd distribution && sha256sum -c SHA256SUMS)
+          echo "Checksum PASS"
+
+      - name: Golden validation
+        run: |
+          set -e
+          python examples/golden_project/run.py
+          echo "Golden validation completed"
+
+      - name: Create or update GitHub Release (idempotent)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          TAG="$GITHUB_REF_NAME"
+          echo "Handling Release for tag: $TAG"
+          echo "Target commit: $GITHUB_SHA"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists — uploading assets with --clobber"
+            gh release view "$TAG" --json tagName,targetCommitish --jq '{tag: .tagName, target: .targetCommitish}'
+            gh release upload "$TAG" \
+              distribution/real-estate-financial-analyst-v1.2.2.zip \
+              distribution/real-estate-financial-analyst-v1.2.2.tar.gz \
+              distribution/SHA256SUMS \
+              distribution/MANIFEST.md \
+              --clobber
+          else
+            echo "Creating new Release $TAG"
+            gh release create "$TAG" \
+              --title "v1.2.2 — Final Hardening & Financial Integrity" \
+              --notes-file docs/FINAL_REPORT_V1_2_2.md \
+              --verify-tag \
+              distribution/real-estate-financial-analyst-v1.2.2.zip \
+              distribution/real-estate-financial-analyst-v1.2.2.tar.gz \
+              distribution/SHA256SUMS \
+              distribution/MANIFEST.md
+          fi
+          echo "Release verification:"
+          gh release view "$TAG" --json tagName,name,targetCommitish,assets --jq '{tag: .tagName, title: .name, target: .targetCommitish, assets: [.assets[] | {name: .name, size: .size}]}'
